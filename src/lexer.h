@@ -1,0 +1,34 @@
+#pragma once
+#include <stdint.h>
+
+typedef enum token_type {
+    TT_OPEN_PAREN, // (
+    TT_CLOSE_PAREN, // )
+    TT_OPEN_BRACE, // {
+    TT_CLOSE_BRACE, // }
+    TT_EQUALS, // =
+
+    TT_PLUS, // +
+    TT_MINUS, // -
+    TT_ASTERISK, // *
+    TT_SLASH, // /
+
+    TT_INTEGER,
+
+    TT_IDENTIFIER,
+    TT_FUNC, // func
+    TT_VAR, // var
+    TT_IF,
+    TT_RETURN, // return
+
+    TT_SEMICOLON, // ;
+    TT_END_OF_FILE,
+} token_type;
+
+typedef struct {
+    uint64_t value;
+    token_type type;
+} token;
+
+token* lexer_tokenize(const char* src_code);
+void lexer_free_tokens(token* tokens);

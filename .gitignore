@@ -1,0 +1,16 @@
+.vscode/*
+
+todo_list.txt
+test/*
+
+out/*
+dracon
+
+run.sh
+main.dn
+a.out
+elf.elf
+out.txt
+
+std/*
+std_start.o
