@@ -12,6 +12,7 @@ int compiler_get_offset();
 void compiler_writeb(uint8_t b);
 void compiler_writew(uint16_t w);
 void compiler_writed(uint32_t d);
+void compiler_writeq(uint64_t q);
 void compiler_writed_offset(uint32_t d, int offset);
 
 registers get_available_reg(registers m);

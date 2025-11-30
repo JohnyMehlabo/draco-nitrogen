@@ -1,5 +1,7 @@
 #pragma once
 #include "assembler/registers.h"
+#include "types/type.h"
+#include <stdbool.h>
 
 struct stmt_s;
 
@@ -20,7 +22,9 @@ struct expr_s;
 
 // Definitions for expressions
 typedef struct {
+    void (*post_parse)(struct expr_s* e);
     registers (*compile_value)(struct expr_s* e, registers m);
+    registers (*compile_value_casted)(struct expr_s* e, registers m, const language_type* type, bool explicit);
     int (*get_priority)(struct expr_s* e);
     void (*free)(struct expr_s* e);
 } expr_vtable;
@@ -36,8 +40,11 @@ typedef enum {
 typedef struct expr_s {
     const expr_vtable* vptr;
     expr_kind kind;
+    language_type* expr_def_type;
 } expr;
 
+#define EXPR_POST_PARSE(e) (e->vptr->post_parse(e))
 #define EXPR_COMPILE_VALUE(e, r) (e->vptr->compile_value(e, r))
+#define EXPR_COMPILE_VALUE_CASTED(e, r, t, ex) (e->vptr->compile_value_casted(e, r, t, ex))
 #define EXPR_GET_PRIORITY(e) (e->vptr->get_priority(e))
 #define EXPR_FREE(e) (e->vptr->free(e))

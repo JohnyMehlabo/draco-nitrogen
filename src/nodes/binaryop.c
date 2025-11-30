@@ -4,6 +4,15 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
+static void post_parse(expr* e) {
+    expr_binaryop* binaryop = (expr_binaryop*)e;
+
+    EXPR_POST_PARSE(binaryop->lhs);
+    EXPR_POST_PARSE(binaryop->rhs);
+
+    binaryop->expr_def_type = type_create_basic(4);
+}
+
 static int get_priority(expr* e) {
     expr_binaryop* binaryop = (expr_binaryop*)e;
     return EXPR_GET_PRIORITY(binaryop->lhs) + EXPR_GET_PRIORITY(binaryop->rhs) 
@@ -37,12 +46,14 @@ static registers compile_value(expr* e, registers m) {
     registers lhs_r, rhs_r;
     registers dst_r;
     
+    language_type expressions_cast_type;
+    type_init_basic(&expressions_cast_type, 8);
     if (EXPR_GET_PRIORITY(binaryop->rhs) >= EXPR_GET_PRIORITY(binaryop->lhs)) {
-        rhs_r = EXPR_COMPILE_VALUE(binaryop->rhs, rhs_mask & ~REG_RAX);
-        lhs_r = EXPR_COMPILE_VALUE(binaryop->lhs, lhs_mask);
+        rhs_r = EXPR_COMPILE_VALUE_CASTED(binaryop->rhs, rhs_mask & ~REG_RAX, &expressions_cast_type, false);
+        lhs_r = EXPR_COMPILE_VALUE_CASTED(binaryop->lhs, lhs_mask, &expressions_cast_type, false);
     } else {
-        lhs_r = EXPR_COMPILE_VALUE(binaryop->lhs, lhs_mask);
-        rhs_r = EXPR_COMPILE_VALUE(binaryop->rhs, REG_ANY & ~REG_RAX);
+        lhs_r = EXPR_COMPILE_VALUE_CASTED(binaryop->lhs, lhs_mask, &expressions_cast_type, false);
+        rhs_r = EXPR_COMPILE_VALUE_CASTED(binaryop->rhs, REG_ANY & ~REG_RAX, &expressions_cast_type, false);
     }
 
     dst_r = lhs_r;
@@ -90,8 +101,15 @@ static registers compile_value(expr* e, registers m) {
     return dst_r;
 }
 
+static registers compile_value_casted(expr* e, registers m, const language_type* type, bool explicit) {
+    registers r = compile_value(e, m);
+    type_basic_cast(e->expr_def_type->basic.size, type->basic.size, r);
+    return r;
+}
+
 static void free_expr(expr* e) {
     expr_binaryop* binaryop = (expr_binaryop*)e;
+    type_free(e->expr_def_type);
 
     EXPR_FREE(binaryop->lhs);
     EXPR_FREE(binaryop->rhs);
@@ -99,7 +117,9 @@ static void free_expr(expr* e) {
 }
 
 const static expr_vtable binaryop_vtable = {
+    .post_parse = post_parse,
     .compile_value = compile_value,
+    .compile_value_casted = compile_value_casted,
     .get_priority = get_priority,
     .free = free_expr
 };

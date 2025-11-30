@@ -25,7 +25,7 @@ stmt* parse_expr_stmt() {
     stmt_expr_stmt* expr_stmt = malloc(sizeof(stmt_expr_stmt));
     expr_stmt->vptr = &expr_stmt_vtable;
     expr_stmt->expr = parse_expr();
-
+    
     if (parser_eat()->type != TT_SEMICOLON) {
         log_error("Expected semicolon after expression statement");
     }

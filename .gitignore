@@ -1,7 +1,7 @@
 .vscode/*
 
 todo_list.txt
-test/*
+sandbox/*
 
 out/*
 dracon
@@ -14,3 +14,7 @@ out.txt
 
 std/*
 std_start.o
+
+tests/a.out
+tests/elf.elf
+tests/tests

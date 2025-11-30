@@ -5,6 +5,13 @@
 
 const registers volatile_registers = REG_RAX | REG_RDI | REG_RSI | REG_RDX | REG_RCX | REG_R8 | REG_R9 | REG_R10 | REG_R11;
 
+static void post_parse(expr* e) {
+    expr_func_call* func_call = (expr_func_call*)e;
+    // TODO: Set type accordingly
+
+    func_call->expr_def_type = type_create_basic(8);
+}
+
 static registers compile_value(expr* e, registers m) {
     expr_func_call* func_call = (expr_func_call*)e;
 
@@ -39,7 +46,14 @@ static registers compile_value(expr* e, registers m) {
     return output_register;
 }
 
+static registers compile_value_casted(expr* e, registers m, const language_type* type, bool explicit) {
+    registers r = compile_value(e, m);
+    type_basic_cast(e->expr_def_type->basic.size, type->basic.size, r);
+    return r;
+}
+
 static void free_expr(expr* e) {
+    type_free(e->expr_def_type);
     free(e);
 }
 
@@ -49,7 +63,9 @@ static int get_priority(expr* e) {
 
 
 const static expr_vtable func_call_vtable = {
+    .post_parse = post_parse,
     .compile_value = compile_value,
+    .compile_value_casted = compile_value_casted,
     .get_priority = get_priority,
     .free = free_expr
 };

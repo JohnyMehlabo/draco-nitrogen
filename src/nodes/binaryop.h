@@ -11,6 +11,7 @@ typedef enum {
 typedef struct {
     const expr_vtable* vptr;
     expr_kind kind;
+    language_type* expr_def_type;
     binary_operator operator;
     expr* lhs;
     expr* rhs;

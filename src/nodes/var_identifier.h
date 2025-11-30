@@ -4,6 +4,7 @@
 typedef struct {
     const expr_vtable* vptr;
     expr_kind kind;
+    language_type* expr_def_type;
     const char* symbol;
 } expr_var_ident;
 

@@ -82,5 +82,7 @@ expr* parse_expr() {
         left = (expr*)binaryop;
     }
 
+    // Run post-parse code to make sure the expression is fully initialized
+    EXPR_POST_PARSE(left);
     return left;
 }

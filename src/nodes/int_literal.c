@@ -8,17 +8,32 @@ static registers compile_value(expr* e, registers m) {
     expr_int_lit* int_literal = (expr_int_lit*)e;
 
     registers r = get_available_reg(m);
-    asm_MOV_rm64_imm32(RM_BASIC(r), int_literal->value);
+    asm_MOV_rm32_imm32(RM_BASIC(r), int_literal->value);
+    set_register_used(r);
+    return r;
+}
+
+static registers compile_value_casted(expr* e, registers m, const language_type* type, bool explicit) {
+    expr_int_lit* int_literal = (expr_int_lit*)e;
+    
+    // // TODO: We are supposing that it is unsigned
+    // int int_min_size = __builtin_clz(int_literal->value);
+
+    registers r = get_available_reg(m);
+    asm_MOV_rx_immx(r, (uint64_t)int_literal->value, type->basic.size);
     set_register_used(r);
     return r;
 }
 
 static void free_expr(expr* e) {
+    type_free(e->expr_def_type);
     free(e);
 }
 
 const static expr_vtable int_lit_vtable = {
+    .post_parse = empty_post_parse,
     .compile_value = compile_value,
+    .compile_value_casted = compile_value_casted,
     .get_priority = priority_zero,
     .free = free_expr
 };
@@ -27,6 +42,7 @@ expr_int_lit* expr_int_lit_create() {
     expr_int_lit* int_literal = malloc(sizeof(expr_int_lit));
     int_literal->vptr = &int_lit_vtable;
     int_literal->kind = EK_INT_LITERAL;
+    int_literal->expr_def_type = type_create_basic(4);
 
     return int_literal;
 }

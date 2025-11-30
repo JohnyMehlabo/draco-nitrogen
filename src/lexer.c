@@ -20,7 +20,9 @@ const keyword keyword_table[] = {
     { .string="func", .type=TT_FUNC },
     { .string="var", .type=TT_VAR },
     { .string="if", .type=TT_IF },
-    { .string="return", .type=TT_RETURN }
+    { .string="return", .type=TT_RETURN },
+    { .string="char", .type=TT_CHAR },
+    { .string="int", .type=TT_INT },
 };
 const int keyword_count = sizeof(keyword_table) / sizeof(keyword);
 

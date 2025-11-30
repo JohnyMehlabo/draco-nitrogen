@@ -144,6 +144,17 @@ void compiler_writed(uint32_t d) {
     db_writeb(&out_buffer, (d >> 24));
 }
 
+void compiler_writeq(uint64_t q) {
+    db_writeb(&out_buffer, q & 0xff);
+    db_writeb(&out_buffer, (q >> 8) & 0xff);
+    db_writeb(&out_buffer, (q >> 16) & 0xff);
+    db_writeb(&out_buffer, (q >> 24) & 0xff);
+    db_writeb(&out_buffer, (q >> 32) & 0xff);
+    db_writeb(&out_buffer, (q >> 40) & 0xff);
+    db_writeb(&out_buffer, (q >> 48) & 0xff);
+    db_writeb(&out_buffer, (q >> 56));
+}
+
 void compiler_writed_offset(uint32_t d, int offset) {
     out_buffer.buffer[offset] = d & 0xff;
     out_buffer.buffer[offset + 1] = (d >> 8) & 0xff;

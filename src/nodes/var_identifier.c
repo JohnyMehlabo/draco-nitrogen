@@ -6,6 +6,13 @@
 #include "error_handling.h"
 #include <stdlib.h>
 
+static void post_parse(expr* e) {
+    expr_var_ident* var_ident = (expr_var_ident*)e;
+
+    // TODO: set the variable type as defined previously
+    var_ident->expr_def_type = type_create_basic(4);
+}
+
 static registers compile_value(expr* e, registers m) {
     expr_var_ident* var_ident = (expr_var_ident*)e;
 
@@ -17,12 +24,19 @@ static registers compile_value(expr* e, registers m) {
     return r;
 }
 
+static registers compile_value_casted(expr* e, registers m, const language_type* type, bool explicit) {
+    return compile_value(e, m);
+}
+
 static void free_expr(expr* e) {
+    type_free(e->expr_def_type);
     free(e);
 }
 
 const static expr_vtable var_ident_vtable = {
+    .post_parse = post_parse,
     .compile_value = compile_value,
+    .compile_value_casted = compile_value_casted,
     .get_priority = priority_zero,
     .free = free_expr
 };

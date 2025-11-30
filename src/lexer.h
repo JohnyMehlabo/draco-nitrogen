@@ -21,6 +21,9 @@ typedef enum token_type {
     TT_IF,
     TT_RETURN, // return
 
+    TT_CHAR, // char
+    TT_INT, // int
+
     TT_SEMICOLON, // ;
     TT_END_OF_FILE,
 } token_type;

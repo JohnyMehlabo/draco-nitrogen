@@ -1,6 +1,7 @@
 #include "var_declaration.h"
-#include "parser/expr_parser.h"
 #include "parser/parser.h"
+#include "parser/expr_parser.h"
+#include "parser/type_parser.h"
 #include "error_handling.h"
 #include "compiler/compiler.h"
 #include "compiler/scope.h"
@@ -13,8 +14,9 @@ static void compile(stmt* s) {
     int stack_offset = scope_declare_variable(var_decl->variable_name);
 
     if (var_decl->initial_value) {
-        registers dst_reg = EXPR_COMPILE_VALUE(var_decl->initial_value, REG_ANY); 
-        asm_MOV_rm64_r64(RM_MEM_READ_DISP(REG_RBP, -stack_offset), dst_reg);
+        registers dst_reg = EXPR_COMPILE_VALUE_CASTED(var_decl->initial_value, REG_ANY, var_decl->variable_type, false); 
+        // TODO: We should use type_get_size
+        asm_MOV_rmx_rx(RM_MEM_READ_DISP(REG_RBP, -stack_offset), dst_reg, var_decl->variable_type->basic.size);
         reset_register_used(dst_reg);
     }
 }
@@ -36,8 +38,11 @@ const stmt_vtable var_decl_vtable = {
 stmt* parse_var_decl() {
     stmt_var_decl* var_decl = malloc(sizeof(stmt_var_decl));
     var_decl->vptr = &var_decl_vtable;
-
+    
     parser_eat(); // Eat "var" token
+    
+    var_decl->variable_type = parse_type(); // Parse type
+
     if (parser_at()->type != TT_IDENTIFIER) {
         log_error("Expected variable name identifier after \"var\" keyword");   
     }
