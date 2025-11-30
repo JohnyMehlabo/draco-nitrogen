@@ -1,0 +1,4 @@
+func main() {
+    var int result = (41 / 2) * 2 - (11 + 12);
+    return result;
+}

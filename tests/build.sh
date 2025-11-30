@@ -1,0 +1,1 @@
+gcc tests.c -Iinclude/ -Llib/ -ljsonc -lm -o tests
