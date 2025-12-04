@@ -50,6 +50,7 @@ expr* parse_func_call_expr() {
         }
 
         const char* symbol = expr_var_ident_get_symbol(left);
+        EXPR_FREE(left);
         expr_func_call* new_expr = expr_func_call_create();
 
         new_expr->function_symbol = symbol;

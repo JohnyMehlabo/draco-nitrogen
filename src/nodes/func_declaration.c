@@ -1,12 +1,14 @@
 #include "func_declaration.h"
 #include "parser/parser.h"
 #include "compiler/compiler.h"
+#include "compiler/function.h"
 #include "error_handling.h"
 #include <stddef.h>
 #include <stdlib.h>
 
 static void compile(stmt* s) {
     stmt_func_decl* func_decl = (stmt_func_decl*)s;
+    if (!func_decl->defined) return;
 
     for (int i = 0; i < func_decl->body.count; i++) {
         STMT_COMPILE(((stmt*)func_decl->body.values[i]));
@@ -54,6 +56,7 @@ stmt* parse_func_decl() {
         parser_eat();
         // Parse body
         da_init(&func_decl->body);
+        func_decl->defined = true;
 
         while (parser_at()->type != TT_CLOSE_BRACE) {
             stmt* s = parse_stmt();
@@ -69,10 +72,13 @@ stmt* parse_func_decl() {
 
         return (stmt*)func_decl;
     } else if (parser_eat()->type == TT_SEMICOLON ) {
+        func_decl->defined = false;
         return (stmt*)func_decl;
     } else {
         log_error("Expected opening brace or semicolon after function signature");
     }
+
+    function_declare();
 
     return NULL;
 }

@@ -6,6 +6,7 @@ typedef struct {
     const stmt_vtable* vptr;
     const char* function_name;
     dynamic_array body;
+    bool defined;
 } stmt_func_decl;
 
 stmt* parse_func_decl();

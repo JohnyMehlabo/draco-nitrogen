@@ -10,16 +10,15 @@ static void post_parse(expr* e) {
     expr_var_ident* var_ident = (expr_var_ident*)e;
 
     // TODO: set the variable type as defined previously
-    var_ident->expr_def_type = type_create_basic(4);
+    var_ident->variable = scope_resolve_variable(var_ident->symbol);
+    var_ident->expr_def_type = var_ident->variable->type;
 }
 
 static registers compile_value(expr* e, registers m) {
     expr_var_ident* var_ident = (expr_var_ident*)e;
 
-    int stack_offset = scope_resolve_variable(var_ident->symbol);
-
     registers r = get_available_reg(m);
-    asm_MOV_r64_rm64(r, RM_MEM_READ_DISP(REG_RBP, -stack_offset));
+    asm_MOV_r64_rm64(r, RM_MEM_READ_DISP(REG_RBP, -var_ident->variable->stack_offset));
     set_register_used(r);
     return r;
 }
@@ -29,7 +28,8 @@ static registers compile_value_casted(expr* e, registers m, const language_type*
 }
 
 static void free_expr(expr* e) {
-    type_free(e->expr_def_type);
+    if (e->expr_def_type != NULL)
+        type_free(e->expr_def_type);
     free(e);
 }
 

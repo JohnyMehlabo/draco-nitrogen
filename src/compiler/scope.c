@@ -4,13 +4,14 @@
 #include <stdlib.h>
 #include <stddef.h>
 #include <stdint.h>
+#include <stdio.h>
 
 #define BUCKET_COUNT 256
 
 typedef struct variable_map_entry_ {
     struct variable_map_entry_* next;
     const char* key;
-    int stack_offset;
+    language_variable variable;
 } variable_map_entry;
 
 typedef struct {
@@ -39,14 +40,15 @@ void variable_map_init() {
     }
 }
 
-void variables_hashmap_add(const char* key, int value) {
+void variables_hashmap_add(const char* key, int value, language_type* type) {
     int bucket = hash_function(key);
 
     variable_map_entry* current = variables.buckets[bucket]; 
     variable_map_entry* new_entry = malloc(sizeof(variable_map_entry));
     new_entry->key = key;
     new_entry->next = NULL;
-    new_entry->stack_offset = value;
+    new_entry->variable.stack_offset = value;
+    new_entry->variable.type = type;
 
     // Check if it is the first element in its bucket
     if (current == NULL) {
@@ -83,20 +85,20 @@ void scope_init() {
 }
 
 int current_stack_offset = 0;
-int scope_declare_variable(const char* name) {
+int scope_declare_variable(const char* name, language_type* type) {
     current_stack_offset += 8;
-    variables_hashmap_add(name, current_stack_offset);
+    variables_hashmap_add(name, current_stack_offset, type);
     return current_stack_offset;
 }
 
-int scope_resolve_variable(const char* name) {
+language_variable* scope_resolve_variable(const char* name) {
     variable_map_entry* entry = variables_hashmap_get(name);
 
     if (entry == NULL) {
         log_error("Trying to access undefined variable");
     }
 
-    return entry->stack_offset;
+    return &entry->variable;
 }
 
 void scope_cleanup() {

@@ -11,12 +11,10 @@
 static void compile(stmt* s) {
     stmt_var_decl* var_decl = (stmt_var_decl*)s;
 
-    int stack_offset = scope_declare_variable(var_decl->variable_name);
-
     if (var_decl->initial_value) {
         registers dst_reg = EXPR_COMPILE_VALUE_CASTED(var_decl->initial_value, REG_ANY, var_decl->variable_type, false); 
         // TODO: We should use type_get_size
-        asm_MOV_rmx_rx(RM_MEM_READ_DISP(REG_RBP, -stack_offset), dst_reg, var_decl->variable_type->basic.size);
+        asm_MOV_rmx_rx(RM_MEM_READ_DISP(REG_RBP, -var_decl->stack_offset), dst_reg, var_decl->variable_type->basic.size);
         reset_register_used(dst_reg);
     }
 }
@@ -49,7 +47,7 @@ stmt* parse_var_decl() {
     
     const token* identifier_token = parser_eat();
     
-    var_decl->variable_name = (char*)identifier_token->value;
+    const char* variable_name = (char*)identifier_token->value;
 
     if (parser_at()->type == TT_EQUALS) {
         parser_eat();
@@ -62,6 +60,8 @@ stmt* parse_var_decl() {
     if (parser_eat()->type != TT_SEMICOLON) {
         log_error("Expected semicolon after variable declaration");
     }
+
+    var_decl->stack_offset = scope_declare_variable(variable_name, var_decl->variable_type);
 
     return (stmt*)var_decl;
 }
