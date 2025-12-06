@@ -1,5 +1,7 @@
 [
 	{ "src": "srcs/main_return.dn", "exit_code": 69 },
 	{ "src": "srcs/basic_arithmetic.dn", "exit_code": 17 },
-	{ "src": "srcs/basic_func_call.dn", "exit_code": 27 }
+	{ "src": "srcs/basic_func_call.dn", "exit_code": 27 },
+	{ "src": "srcs/forward_declaration.dn", "exit_code": 50 },
+	{ "src": "srcs/successive_calls.dn", "exit_code": 245 }
 ]

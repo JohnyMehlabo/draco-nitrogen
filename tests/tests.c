@@ -45,9 +45,9 @@ void run_test(char* src, int expected_exit_code) {
     int exit_code = run_executable("./a.out", argv);
 
     if (exit_code != expected_exit_code) {
-        printf("\e[0;31mTEST FAILED: %s:%d expected:%d\n", src, exit_code, expected_exit_code);
+        printf("\e[0;31mTEST FAILED: %s:%d expected:%d\e[0m\n", src, exit_code, expected_exit_code);
     } else {
-        printf("\e[0;32mTEST PASSED: %s:%d\n", src, exit_code);
+        printf("\e[0;32mTEST PASSED: %s:%d\e[0m\n", src, exit_code);
     }
 }
 

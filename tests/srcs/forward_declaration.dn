@@ -1,0 +1,14 @@
+func func1() -> int;
+func func2() -> int;
+
+func main() -> int {
+    return func1() + func2();
+}
+
+func func1() -> int {
+    return 30;
+}
+
+func func2() -> int {
+    return 20;
+}
