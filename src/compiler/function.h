@@ -11,6 +11,10 @@ typedef struct {
     const char* symbol;
     language_type* return_type;
     dynamic_array* args;
+    bool defined;
 } language_function;
 
-void function_declare(const char* symbol, language_type* return_type, dynamic_array* args);
+void functions_init();
+language_function* function_declare(const char* symbol, language_type* return_type, dynamic_array* args, bool defined);
+language_function* function_resolve(const char* symbol);
+void functions_cleanup();

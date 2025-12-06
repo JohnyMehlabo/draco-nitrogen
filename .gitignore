@@ -11,6 +11,7 @@ main.dn
 a.out
 elf.elf
 out.txt
+valgrind.txt
 
 std/*
 std_start.o

@@ -32,12 +32,12 @@ int link_executable() {
 void run_test(char* src, int expected_exit_code) {
 
     if (compile_src(src) != 0) {
-        printf("\e[0;31mTEST FAILED: %s failed compiling\n", src);
+        printf("\e[0;31mTEST FAILED: %s failed compiling\e[0m\n", src);
         return;
     }
 
     if (link_executable() != 0) {
-        printf("\e[0;31mTEST FAILED: %s failed linking\n", src);
+        printf("\e[0;31mTEST FAILED: %s failed linking\e[0m\n", src);
         return;
     }
 

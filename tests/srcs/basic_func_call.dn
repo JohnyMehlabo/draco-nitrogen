@@ -1,7 +1,7 @@
-func main() {
-    return func1();
+func func1() -> int{
+    return 27;
 }
 
-func func1() {
-    return 27;
+func main() -> int {
+    return func1();
 }

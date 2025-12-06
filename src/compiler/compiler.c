@@ -6,12 +6,12 @@
 #include "elf/elf.h"
 #include "elf/text_section.h"
 #include "elf/rela_section.h"
-#include "scope.h"
 #include "relocation.h"
 #include "data_structures/dynamic_buffer.h"
 #include <stdlib.h>
 #include <memory.h>
 
+size_t global_size;
 dynamic_buffer out_buffer;
 
 elf output;
@@ -46,7 +46,7 @@ void add_epilogue() {
 void compiler_add_function_relocation(const char* symbol) {
     pending_rela_relocation* new_reloc = malloc(sizeof(pending_rela_relocation));
     new_reloc->symbol = symbol;
-    new_reloc->offset = compiler_get_offset();
+    new_reloc->offset = global_size + compiler_get_offset();
     new_reloc->type = 4; // R_AMD_PLT32
     new_reloc->addend = -4;
 
@@ -79,6 +79,8 @@ void pending_rela_relocations_apply() {
             elf_find_symbol(&output, pending_entry->symbol),
             pending_entry->type,
             pending_entry->addend);
+
+        free(pending_entry);
     }
 
 }
@@ -90,6 +92,7 @@ void compiler_finish_function(const char* name) {
     add_epilogue();
     
     pending_rela_relocations_adjust(prologue_size);
+    global_size += out_buffer.size;
     elf_text_section_add_block(&output, text_section, out_buffer.buffer, out_buffer.size, name);
     db_reset(&out_buffer);
 
@@ -98,10 +101,8 @@ void compiler_finish_function(const char* name) {
 }
 
 void compile_program(const stmt_program* program) {
-    scope_init();
     relocations_init();
     da_init(&pending_rela_relocations);
-
     db_init(&out_buffer);
 
     elf_init(&output);
@@ -118,7 +119,6 @@ void compile_program(const stmt_program* program) {
     elf_free(&output);
     db_free(&out_buffer);
 
-    scope_cleanup();
     relocations_clear();
     relocations_cleanup();
     da_free(&pending_rela_relocations);

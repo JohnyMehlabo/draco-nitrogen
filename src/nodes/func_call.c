@@ -1,15 +1,20 @@
 #include "func_call.h"
 #include "assembler/assembler.h"
 #include "compiler/compiler.h"
+#include "error_handling.h"
 #include <stdlib.h>
 
 const registers volatile_registers = REG_RAX | REG_RDI | REG_RSI | REG_RDX | REG_RCX | REG_R8 | REG_R9 | REG_R10 | REG_R11;
 
 static void post_parse(expr* e) {
     expr_func_call* func_call = (expr_func_call*)e;
-    // TODO: Set type accordingly
 
-    func_call->expr_def_type = type_create_basic(8);
+    func_call->function = function_resolve(func_call->function_symbol);
+    if (func_call->function == NULL) {
+        log_error("Trying to call undefined function");
+    }
+
+    func_call->expr_def_type = func_call->function->return_type;
 }
 
 static registers compile_value(expr* e, registers m) {

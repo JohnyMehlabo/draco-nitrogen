@@ -22,6 +22,7 @@ static void compile(stmt* s) {
 static void free_stmt(stmt* s) {
     stmt_var_decl* var_decl = (stmt_var_decl*)s;
 
+    type_free(var_decl->variable_type);
     if (var_decl->initial_value) {
         EXPR_FREE(var_decl->initial_value);
     }

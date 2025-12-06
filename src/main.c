@@ -5,7 +5,8 @@
 #include "parser/parser.h"
 #include "compiler/compiler.h"
 #include "elf/elf.h"
-#include "elf/text_section.h"
+#include "compiler/scope.h"
+#include "compiler/function.h"
 
 int main(int argc, char** argv) {
     if (argc < 2) {
@@ -19,8 +20,15 @@ int main(int argc, char** argv) {
     if (tokens == NULL)
         return -1;
 
+    // These are needed in the parsing step
+    scope_init();
+    functions_init();
+
     stmt_program* program = parse_program(tokens);
     compile_program(program);
+    
+    scope_cleanup();
+    functions_cleanup();
 
     free_program(program);
     lexer_free_tokens(tokens);

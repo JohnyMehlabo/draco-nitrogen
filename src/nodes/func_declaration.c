@@ -1,5 +1,6 @@
 #include "func_declaration.h"
 #include "parser/parser.h"
+#include "parser/type_parser.h"
 #include "compiler/compiler.h"
 #include "compiler/function.h"
 #include "error_handling.h"
@@ -14,7 +15,7 @@ static void compile(stmt* s) {
         STMT_COMPILE(((stmt*)func_decl->body.values[i]));
     }
 
-    compiler_finish_function(func_decl->function_name);
+    compiler_finish_function(func_decl->declared_function->symbol);
 }
 
 static void free_stmt(stmt* s) {
@@ -43,7 +44,6 @@ stmt* parse_func_decl() {
     }
 
     const token* func_name_token = parser_eat();
-    func_decl->function_name = (const char*)func_name_token->value;
 
     if (parser_eat()->type != TT_OPEN_PAREN) {
         log_error("Expected opening parenthesis after function name");
@@ -51,6 +51,12 @@ stmt* parse_func_decl() {
     if (parser_eat()->type != TT_CLOSE_PAREN) {
         log_error("Expected closing parenthesis after function name");
     }
+
+    if (parser_eat()->type != TT_RIGHT_ARROW) {
+        log_error("Expected function return type");
+    }
+
+    language_type* return_type = parse_type();
 
     if (parser_at()->type == TT_OPEN_BRACE ) {
         parser_eat();
@@ -69,16 +75,13 @@ stmt* parse_func_decl() {
         if (parser_eat()->type != TT_CLOSE_BRACE) {
             log_error("Reached unexpected EOF. Expecting closing brace");
         }
-
-        return (stmt*)func_decl;
+        
     } else if (parser_eat()->type == TT_SEMICOLON ) {
         func_decl->defined = false;
-        return (stmt*)func_decl;
     } else {
         log_error("Expected opening brace or semicolon after function signature");
     }
-
-    function_declare();
-
-    return NULL;
+    
+    func_decl->declared_function = function_declare((const char*)func_name_token->value, return_type, NULL, func_decl->defined);
+    return (stmt*)func_decl;
 }

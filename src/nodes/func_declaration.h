@@ -1,10 +1,11 @@
 #pragma once
 #include "node.h"
 #include "data_structures/dynamic_array.h"
+#include "compiler/function.h"
 
 typedef struct {
     const stmt_vtable* vptr;
-    const char* function_name;
+    language_function* declared_function;
     dynamic_array body;
     bool defined;
 } stmt_func_decl;

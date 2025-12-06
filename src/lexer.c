@@ -65,7 +65,11 @@ token* lexer_tokenize(const char* src_code) {
         }
         // Check for double-character tokens
         if (src_code[1]) {
-
+            if (src_code[0] == '-' && src_code[1] == '>') {
+                list[token_count++] = (token){ .type=TT_RIGHT_ARROW, .value=0 };
+                src_code += 2;
+                continue;
+            }
         }
         if (*src_code == ' ' || *src_code == '\n' || *src_code == '\t' || *src_code == '\r') {
             src_code++;

@@ -7,6 +7,7 @@ typedef enum token_type {
     TT_OPEN_BRACE, // {
     TT_CLOSE_BRACE, // }
     TT_EQUALS, // =
+    TT_RIGHT_ARROW, // ->
 
     TT_PLUS, // +
     TT_MINUS, // -
