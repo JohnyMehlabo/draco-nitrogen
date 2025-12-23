@@ -78,6 +78,8 @@ static registers compile_value(expr* e, registers m) {
     if (output_register != REG_RAX) {
         asm_MOV_rm64_r64(RM_BASIC(output_register), REG_RAX);
         set_register_used(output_register);
+    } else {
+        set_register_used(REG_RAX);
     }
 
     // We recover the pushed registers in reverse order
