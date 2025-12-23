@@ -1,0 +1,16 @@
+func times3v(int n) -> int {
+    var int v = n*3;
+    return v;
+}
+
+func times3(int n) -> int {
+    return n*3;
+}
+
+func times2(int n) -> int {
+    return n*2;
+}
+
+func main() -> int {
+    return times2(7) + times3v(times2(15)) - times3(5);
+}
