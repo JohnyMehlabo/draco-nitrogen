@@ -75,6 +75,7 @@ token* lexer_tokenize(const char* src_code) {
             src_code++;
             continue;
         }
+        CHARACTER_ENTRY(',', TT_COMMA)
         CHARACTER_ENTRY('(', TT_OPEN_PAREN)
         CHARACTER_ENTRY(')', TT_CLOSE_PAREN)
         CHARACTER_ENTRY('{', TT_OPEN_BRACE)

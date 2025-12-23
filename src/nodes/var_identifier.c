@@ -10,26 +10,27 @@ static void post_parse(expr* e) {
     expr_var_ident* var_ident = (expr_var_ident*)e;
 
     // TODO: set the variable type as defined previously
-    var_ident->variable = scope_resolve_variable(var_ident->symbol);
-    var_ident->expr_def_type = var_ident->variable->type;
+    var_ident->expr_def_type = scope_resolve_variable(var_ident->symbol)->type;
 }
 
 static registers compile_value(expr* e, registers m) {
     expr_var_ident* var_ident = (expr_var_ident*)e;
 
+    int stack_offset = scope_resolve_variable(var_ident->symbol)->stack_offset;
+
     registers r = get_available_reg(m);
-    asm_MOV_r64_rm64(r, RM_MEM_READ_DISP(REG_RBP, -var_ident->variable->stack_offset));
+    asm_MOV_rx_rmx(r, RM_MEM_READ_DISP(REG_RBP, -stack_offset), var_ident->expr_def_type->basic.size);
     set_register_used(r);
     return r;
 }
 
 static registers compile_value_casted(expr* e, registers m, const language_type* type, bool explicit) {
-    return compile_value(e, m);
+    registers r = compile_value(e, m);
+    type_basic_cast(e->expr_def_type->basic.size, type->basic.size, r);
+    return r;
 }
 
 static void free_expr(expr* e) {
-    if (e->expr_def_type != NULL)
-        type_free(e->expr_def_type);
     free(e);
 }
 

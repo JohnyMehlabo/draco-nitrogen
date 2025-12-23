@@ -11,13 +11,13 @@ void functions_init() {
 }
 
 void free_args(dynamic_array* args) {
-    // for (int i = 0; i < args->count; i++) {
-    //     language_function_arg* arg = args->values[i];
-    //     type_free(arg->type);
-    //     free(arg);
-    // }
-    // da_free(args);
-    // free(args);
+    for (int i = 0; i < args->count; i++) {
+        language_function_arg* arg = args->values[i];
+        type_free(arg->type);
+        free(arg);
+    }
+    da_free(args);
+    free(args);
 }
 
 language_function* function_declare(const char* symbol, language_type* return_type, dynamic_array* args, bool defined) {

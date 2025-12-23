@@ -9,4 +9,5 @@ typedef struct {
 void scope_init();
 int scope_declare_variable(const char* name, language_type* type);
 language_variable* scope_resolve_variable(const char* name);
+void scope_new();
 void scope_cleanup();

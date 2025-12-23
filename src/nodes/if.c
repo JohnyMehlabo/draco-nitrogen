@@ -13,7 +13,12 @@ static void compile(stmt* s) {
 
     int if_end_reloc = relocations_new();
 
-    registers r = EXPR_COMPILE_VALUE(if_stmt->condition, REG_ANY);
+    // TODO: Unnecesary cast
+    language_type cast_type;
+    type_init_basic(&cast_type, 8);
+
+    registers r = EXPR_COMPILE_VALUE_CASTED(if_stmt->condition, REG_ANY, &cast_type, false);
+    
     asm_TEST_rm64_r64(RM_BASIC(r), r);
     reset_register_used(r);
     asm_JZ_reloc(if_end_reloc);

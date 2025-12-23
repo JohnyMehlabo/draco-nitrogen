@@ -5,6 +5,7 @@
 #include "nodes/binaryop.h"
 #include "nodes/func_call.h"
 #include "error_handling.h"
+#include <stdlib.h>
 #include <stddef.h>
 
 expr* parse_primary_expr() {
@@ -41,6 +42,23 @@ expr* parse_func_call_expr() {
 
     if (parser_at()->type == TT_OPEN_PAREN) {
         parser_eat();
+
+        dynamic_array* args = malloc(sizeof(dynamic_array));
+        da_init(args);
+
+        while (parser_at()->type != TT_CLOSE_PAREN && parser_at()->type != TT_END_OF_FILE) {
+            expr* arg_expr = parse_expr();
+            da_push(args, arg_expr);
+
+            if (parser_at()->type == TT_CLOSE_PAREN) // Arguments finished
+                break;
+
+            if (parser_at()->type != TT_COMMA) {
+                log_error("Expected ',' or ')' after arg in function call");
+            }
+            parser_eat(); // Eat the comma
+        }
+
         if (parser_eat()->type != TT_CLOSE_PAREN) {
             log_error("Expected closing parenthesis in function call");
         }
@@ -54,6 +72,7 @@ expr* parse_func_call_expr() {
         expr_func_call* new_expr = expr_func_call_create();
 
         new_expr->function_symbol = symbol;
+        new_expr->args = args;
         return (expr*)new_expr;
     }
 

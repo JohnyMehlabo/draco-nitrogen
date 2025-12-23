@@ -21,6 +21,9 @@ void asm_MOV_rm32_r32(register_memory dst, registers src);
 void asm_MOV_rm16_r16(register_memory dst, registers src);
 void asm_MOV_rm8_r8(register_memory dst, registers src);
 void asm_MOV_r64_rm64(registers dst, register_memory src);
+void asm_MOV_r32_rm32(registers dst, register_memory src);
+void asm_MOV_r16_rm16(registers dst, register_memory src);
+void asm_MOV_r8_rm8(registers dst, register_memory src);
 void asm_MOV_rm64_imm32(register_memory dst, uint32_t imm);
 void asm_MOV_rm32_imm32(register_memory dst, uint32_t imm);
 void asm_MOV_rm16_imm16(register_memory dst, uint16_t imm);
@@ -28,6 +31,7 @@ void asm_MOV_r64_imm64(registers dst, uint64_t imm);
 void asm_MOV_r8_imm8(registers dst, uint8_t imm);
 void asm_MOV_rx_immx(registers dst, uint64_t imm, int size);
 void asm_MOV_rmx_rx(register_memory dst, registers src, int size);
+void asm_MOV_rx_rmx(registers dst, register_memory src, int size);
 
 void ASM_MOVZX_r32_rm16(registers dst, register_memory src);
 void ASM_MOVZX_r32_rm8(registers dst, register_memory src);

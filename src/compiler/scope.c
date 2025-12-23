@@ -40,14 +40,14 @@ void variable_map_init() {
     }
 }
 
-void variables_hashmap_add(const char* key, int value, language_type* type) {
+void variables_hashmap_add(const char* key, int offset, language_type* type) {
     int bucket = hash_function(key);
 
     variable_map_entry* current = variables.buckets[bucket]; 
     variable_map_entry* new_entry = malloc(sizeof(variable_map_entry));
     new_entry->key = key;
     new_entry->next = NULL;
-    new_entry->variable.stack_offset = value;
+    new_entry->variable.stack_offset = offset;
     new_entry->variable.type = type;
 
     // Check if it is the first element in its bucket
@@ -101,7 +101,8 @@ language_variable* scope_resolve_variable(const char* name) {
     return &entry->variable;
 }
 
-void scope_cleanup() {
+void scope_new() {
+    current_stack_offset = 0;
     for (int i = 0; i < BUCKET_COUNT; i++) {
         variable_map_entry* current = variables.buckets[i];
         variable_map_entry* next;
@@ -112,4 +113,9 @@ void scope_cleanup() {
             current = next;
         }
     }
+    variable_map_init();
+}
+
+void scope_cleanup() {
+    scope_new();
 }

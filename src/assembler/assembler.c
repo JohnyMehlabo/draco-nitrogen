@@ -58,6 +58,29 @@ void asm_MOV_r64_rm64(registers dst, register_memory src) {
     generate_modrm(src, reg_id(dst));
 }
 
+void asm_MOV_r32_rm32(registers dst, register_memory src) {
+    compiler_writeb(0x8b); // opcode
+    generate_modrm(src, reg_id(dst));
+}
+
+void asm_MOV_r16_rm16(registers dst, register_memory src) {
+    compiler_writeb(0x66); // 16-bit prefix
+    compiler_writeb(0x8b); // opcode
+    generate_modrm(src, reg_id(dst));
+}
+
+void asm_MOV_r8_rm8(registers dst, register_memory src) {
+        // Check for REX prefix
+    if (dst & (REG_RSP | REG_RBP | REG_RSI | REG_RDI)) {
+        compiler_writeb(0x40); // opcode
+    } else if (dst & (REG_R8 | REG_R9 | REG_R10 | REG_R11 | REG_R12 | REG_R13 | REG_R14 | REG_R15)) {
+        compiler_writeb(0x41); // opcode
+    }
+
+    compiler_writeb(0x8b); // opcode
+    generate_modrm(src, reg_id(dst));
+}
+
 void asm_MOV_rm64_imm32(register_memory dst, uint32_t imm) {
     compiler_writeb(0b01001000); // REX prefix
     compiler_writeb(0xc7); // opcode
@@ -135,6 +158,27 @@ void asm_MOV_rmx_rx(register_memory dst, registers src, int size) {
     }
 }
 
+void asm_MOV_rx_rmx(registers dst, register_memory src, int size) {
+    switch (size)
+    {
+    case 8:
+        asm_MOV_r64_rm64(dst, src);
+        break;
+    case 4:
+        asm_MOV_r32_rm32(dst, src);
+        break;
+    case 2:
+        asm_MOV_r16_rm16(dst, src);
+        break;
+    case 1:
+        asm_MOV_r8_rm8(dst, src);
+        break;
+    default:
+        break;
+    }
+}
+
+
 void ASM_MOVZX_r32_rm16(registers dst, register_memory src) {
     compiler_writeb(0x0f); // opcode
     compiler_writeb(0xb7); // opcode
@@ -142,12 +186,24 @@ void ASM_MOVZX_r32_rm16(registers dst, register_memory src) {
 }
 
 void ASM_MOVZX_r32_rm8(registers dst, register_memory src) {
+    if (dst & (REG_RSP | REG_RBP | REG_RSI | REG_RDI)) {
+        compiler_writeb(0x40); // opcode
+    } else if (dst & (REG_R8 | REG_R9 | REG_R10 | REG_R11 | REG_R12 | REG_R13 | REG_R14 | REG_R15)) {
+        compiler_writeb(0x41); // opcode
+    }
+
     compiler_writeb(0x0f); // opcode
     compiler_writeb(0xb6); // opcode
     generate_modrm(src, reg_id(dst));
 }
 
 void ASM_MOVZX_r16_rm8(registers dst, register_memory src) {
+    if (dst & (REG_RSP | REG_RBP | REG_RSI | REG_RDI)) {
+        compiler_writeb(0x40); // opcode
+    } else if (dst & (REG_R8 | REG_R9 | REG_R10 | REG_R11 | REG_R12 | REG_R13 | REG_R14 | REG_R15)) {
+        compiler_writeb(0x41); // opcode
+    }
+    
     compiler_writeb(0x66); // 16-bit prefix
     compiler_writeb(0x0f); // opcode
     compiler_writeb(0xb6); // opcode
@@ -155,9 +211,9 @@ void ASM_MOVZX_r16_rm8(registers dst, register_memory src) {
 }
 
 void ASM_MOVZX_rx_rmy(registers dst, int dst_size, register_memory src, int src_size) {
-    if (dst_size == 16 && src_size == 8) ASM_MOVZX_r16_rm8(dst, src);
-    else if (dst_size == 32 && src_size == 8) ASM_MOVZX_r32_rm8(dst, src);
-    else if (dst_size == 32 && src_size == 16) ASM_MOVZX_r32_rm16(dst, src);
+    if (dst_size == 2 && src_size == 1) ASM_MOVZX_r16_rm8(dst, src);
+    else if (dst_size == 4 && src_size == 1) ASM_MOVZX_r32_rm8(dst, src);
+    else if (dst_size == 4 && src_size == 2) ASM_MOVZX_r32_rm16(dst, src);
 }
 
 void asm_ADD_rm64_r64(register_memory op1, registers op2) {

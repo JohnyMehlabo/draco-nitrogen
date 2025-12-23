@@ -4,8 +4,8 @@
 
 typedef struct {
     const stmt_vtable* vptr;
+    const char* name;
     language_type* variable_type;
-    int stack_offset;
     expr* initial_value;
 } stmt_var_decl;
 

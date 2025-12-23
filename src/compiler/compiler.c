@@ -1,4 +1,5 @@
 #include "compiler.h"
+#include "compiler/scope.h"
 #include "../nodes/node.h"
 #include "file.h"
 #include "assembler/registers.h"
@@ -98,6 +99,9 @@ void compiler_finish_function(const char* name) {
 
     // Reset register use mask just in case
     register_use_mask = REG_RBX | REG_RSP | REG_RBP | REG_R12 | REG_R13 | REG_R14 | REG_R15;
+
+    // Start a new scope
+    scope_new();
 }
 
 void compile_program(const stmt_program* program) {
