@@ -2,6 +2,7 @@
 #include "assembler/assembler.h"
 #include "compiler/compiler.h"
 #include "error_handling.h"
+#include "common_methods.h"
 #include <stdlib.h>
 
 const registers volatile_registers = REG_RAX | REG_RDI | REG_RSI | REG_RDX | REG_RCX | REG_R8 | REG_R9 | REG_R10 | REG_R11;
@@ -116,11 +117,11 @@ static int get_priority(expr* e) {
     return 2;
 }
 
-
 const static expr_vtable func_call_vtable = {
     .post_parse = post_parse,
     .compile_value = compile_value,
     .compile_value_casted = compile_value_casted,
+    .get_lvalue_rm = not_lvalue,
     .get_priority = get_priority,
     .free = free_expr
 };

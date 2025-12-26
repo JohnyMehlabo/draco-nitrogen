@@ -30,6 +30,14 @@ static registers compile_value_casted(expr* e, registers m, const language_type*
     return r;
 }
 
+static register_memory get_lvalue_rm(expr* e) {
+    expr_var_ident* var_ident = (expr_var_ident*)e;
+
+    int stack_offset = scope_resolve_variable(var_ident->symbol)->stack_offset;
+
+    return RM_MEM_READ_DISP(REG_RBP, -stack_offset);
+}
+
 static void free_expr(expr* e) {
     free(e);
 }
@@ -38,6 +46,7 @@ const static expr_vtable var_ident_vtable = {
     .post_parse = post_parse,
     .compile_value = compile_value,
     .compile_value_casted = compile_value_casted,
+    .get_lvalue_rm = get_lvalue_rm,
     .get_priority = priority_zero,
     .free = free_expr
 };

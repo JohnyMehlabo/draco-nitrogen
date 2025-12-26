@@ -1,6 +1,7 @@
 #include "binaryop.h"
 #include "compiler/compiler.h"
 #include "assembler/assembler.h"
+#include "common_methods.h"
 #include <stdlib.h>
 #include <stdbool.h>
 
@@ -120,6 +121,7 @@ const static expr_vtable binaryop_vtable = {
     .post_parse = post_parse,
     .compile_value = compile_value,
     .compile_value_casted = compile_value_casted,
+    .get_lvalue_rm = not_lvalue,
     .get_priority = get_priority,
     .free = free_expr
 };

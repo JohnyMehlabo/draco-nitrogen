@@ -34,6 +34,7 @@ const static expr_vtable int_lit_vtable = {
     .post_parse = empty_post_parse,
     .compile_value = compile_value,
     .compile_value_casted = compile_value_casted,
+    .get_lvalue_rm = not_lvalue,
     .get_priority = priority_zero,
     .free = free_expr
 };

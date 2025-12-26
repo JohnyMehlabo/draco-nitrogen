@@ -4,6 +4,7 @@
 #include "nodes/var_identifier.h"
 #include "nodes/binaryop.h"
 #include "nodes/func_call.h"
+#include "nodes/assignment.h"
 #include "error_handling.h"
 #include <stdlib.h>
 #include <stddef.h>
@@ -92,7 +93,7 @@ expr* parse_multiplicative_expr() {
     return left;
 }
 
-expr* parse_expr() {
+expr* parse_additive_expr() {
     expr* left = parse_multiplicative_expr();
     while (parser_at()->type == TT_PLUS || parser_at()->type == TT_MINUS) {
         expr_binaryop* binaryop = expr_binaryop_create();
@@ -102,7 +103,27 @@ expr* parse_expr() {
         left = (expr*)binaryop;
     }
 
-    // Run post-parse code to make sure the expression is fully initialized
-    EXPR_POST_PARSE(left);
     return left;
+}
+
+expr* parse_assignment_expr() {
+    expr* left = parse_additive_expr();
+
+    if (parser_at()->type == TT_EQUALS) {
+        parser_eat(); // Eat the '=' token
+        expr_assignment* assignment = expr_assignment_create();
+        assignment->lhs = left;
+        assignment->rhs = parse_assignment_expr();
+        return (expr*)assignment;
+    }
+
+    return left;
+}
+
+expr* parse_expr() {
+    expr* e = parse_assignment_expr();
+
+    // Run post-parse code to make sure the expression is fully initialized
+    EXPR_POST_PARSE(e);
+    return e;
 }
