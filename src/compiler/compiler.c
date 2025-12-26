@@ -32,11 +32,23 @@ int last_adjusted_relocation;
 uint64_t register_use_mask = REG_RBX | REG_RSP | REG_RBP | REG_R12 | REG_R13 | REG_R14 | REG_R15;
 
 int add_prologue() {
-    db_move_forward(&out_buffer, 5); // Allocate enough space at the beginning to contain the function epilogue
+    int prologue_size = 2 + 3;
+
+    int sp_offset = scope_get_sp_offset();
+    if (sp_offset != 0) {
+        prologue_size += 7;
+    }
+
+    db_move_forward(&out_buffer, prologue_size); // Allocate enough space at the beginning to contain the function epilogue
     out_buffer.buffer[0] = 0xff; out_buffer.buffer[1] = 0xf5; // push rbp
     out_buffer.buffer[2] = 0x48; out_buffer.buffer[3] = 0x89; out_buffer.buffer[4] = 0xe5; // mov rbp,rsp
 
-    return 5; // The function returns the size of the generated prologue
+    if (sp_offset != 0) {
+        out_buffer.buffer[5] = 0x48; out_buffer.buffer[6] = 0x81; out_buffer.buffer[7] = 0xec; // sub esp,rsp
+        compiler_writed_offset(sp_offset, 8);
+    }
+
+    return prologue_size; // The function returns the size of the generated prologue
 }
 
 void add_epilogue() {

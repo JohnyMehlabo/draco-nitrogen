@@ -101,6 +101,10 @@ language_variable* scope_resolve_variable(const char* name) {
     return &entry->variable;
 }
 
+int scope_get_sp_offset() {
+    return current_stack_offset;
+}
+
 void scope_new() {
     current_stack_offset = 0;
     for (int i = 0; i < BUCKET_COUNT; i++) {
