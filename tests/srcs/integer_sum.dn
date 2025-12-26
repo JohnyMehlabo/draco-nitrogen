@@ -1,0 +1,8 @@
+func loop(int n) -> int {
+    if (n) return loop(n-1) + n;
+    return 0;
+}
+
+func main() -> int {
+    return loop(10);
+}
