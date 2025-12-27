@@ -50,7 +50,9 @@ void asm_PUSH_rm64(register_memory r);
 void asm_POP_rm64(register_memory r);
 
 void asm_JMP_reloc(int reloc_id);
+void asm_JE_reloc(int reloc_id);
 void asm_JZ_reloc(int reloc_id);
+void asm_JNE_reloc(int reloc_id);
 
 void asm_TEST_rm64_r64(register_memory op1, registers op2);
 void asm_CMP_rm64_r64(register_memory op1, registers op2);

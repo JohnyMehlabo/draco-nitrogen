@@ -277,9 +277,20 @@ void asm_JMP_reloc(int reloc_id) {
     compiler_writed(0x00000000); // temporary 0s before relocations are applied
 }
 
-void asm_JZ_reloc(int reloc_id) {
+void asm_JE_reloc(int reloc_id) {
     compiler_writeb(0x0f); // opcode
     compiler_writeb(0x84); // opcode
+    relocations_add(reloc_id, compiler_get_offset());
+    compiler_writed(0x00000000); // temporary 0s before relocations are applied
+}
+
+void asm_JZ_reloc(int reloc_id) {
+    asm_JE_reloc(reloc_id);
+}
+
+void asm_JNE_reloc(int reloc_id) {
+    compiler_writeb(0x0f); // opcode
+    compiler_writeb(0x85); // opcode
     relocations_add(reloc_id, compiler_get_offset());
     compiler_writed(0x00000000); // temporary 0s before relocations are applied
 }

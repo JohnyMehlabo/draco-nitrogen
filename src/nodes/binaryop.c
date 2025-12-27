@@ -120,6 +120,56 @@ static registers compile_value_casted(expr* e, registers m, const language_type*
     return r;
 }
 
+static void evaluate_condition(expr* e, int t, int f) {
+    expr_binaryop* binaryop = (expr_binaryop*)e;
+
+    if (binaryop->operator == BO_EQUALS || binaryop->operator == BO_UNEQUAL) {
+        registers lhs_r, rhs_r;
+
+        registers lhs_mask = REG_ANY;
+        registers rhs_mask = REG_ANY;
+
+        language_type expressions_cast_type;
+        type_init_basic(&expressions_cast_type, 8);
+        if (EXPR_GET_PRIORITY(binaryop->rhs) >= EXPR_GET_PRIORITY(binaryop->lhs)) {
+            rhs_r = EXPR_COMPILE_VALUE_CASTED(binaryop->rhs, rhs_mask & ~REG_RAX, &expressions_cast_type, false);
+            lhs_r = EXPR_COMPILE_VALUE_CASTED(binaryop->lhs, lhs_mask, &expressions_cast_type, false);
+        } else {
+            lhs_r = EXPR_COMPILE_VALUE_CASTED(binaryop->lhs, lhs_mask, &expressions_cast_type, false);
+            rhs_r = EXPR_COMPILE_VALUE_CASTED(binaryop->rhs, REG_ANY & ~REG_RAX, &expressions_cast_type, false);
+        }
+
+        asm_CMP_rm64_r64(RM_BASIC(lhs_r), rhs_r);
+        reset_register_used(lhs_r);
+        reset_register_used(rhs_r);
+
+        switch (binaryop->operator)
+        {
+        case BO_EQUALS:
+            if (t != -1) {
+                asm_JE_reloc(t);
+                if (f != -1)
+                    asm_JMP_reloc(f);
+            } else if (f != -1) {
+                asm_JNE_reloc(f);
+            }
+            break;
+        case BO_UNEQUAL:
+            if (t != -1) {
+                asm_JNE_reloc(t);
+                if (f != -1)
+                    asm_JMP_reloc(f);
+            } else if (f != -1) {
+                asm_JE_reloc(f);
+            }
+        default:
+            break;
+        }
+    } else {
+        default_evaluate_condition(e, t, f);
+    }
+}
+
 static void free_expr(expr* e) {
     expr_binaryop* binaryop = (expr_binaryop*)e;
     type_free(e->expr_def_type);
@@ -134,6 +184,7 @@ const static expr_vtable binaryop_vtable = {
     .compile_value = compile_value,
     .compile_value_casted = compile_value_casted,
     .get_lvalue_rm = not_lvalue,
+    .evaluate_condition = evaluate_condition,
     .get_priority = get_priority,
     .free = free_expr
 };

@@ -42,6 +42,7 @@ const static expr_vtable var_ident_vtable = {
     .compile_value = compile_value,
     .compile_value_casted = default_compilate_casted,
     .get_lvalue_rm = get_lvalue_rm,
+    .evaluate_condition = default_evaluate_condition,
     .get_priority = priority_zero,
     .free = free_expr
 };

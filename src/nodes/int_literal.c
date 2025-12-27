@@ -30,6 +30,17 @@ static registers compile_value_casted(expr* e, registers m, const language_type*
     return r;
 }
 
+static void evaluate_condition(expr* e, int t, int f) {
+    expr_int_lit* int_literal = (expr_int_lit*)e;
+
+    // With these kind of expression either it is always true or always false
+    if (int_literal->value && t != -1)
+        asm_JMP_reloc(t);
+    
+    if (!int_literal->value && f != -1)
+        asm_JMP_reloc(f);
+}
+
 static void free_expr(expr* e) {
     type_free(e->expr_def_type);
     free(e);
@@ -40,6 +51,7 @@ const static expr_vtable int_lit_vtable = {
     .compile_value = compile_value,
     .compile_value_casted = compile_value_casted,
     .get_lvalue_rm = not_lvalue,
+    .evaluate_condition = evaluate_condition,
     .get_priority = priority_zero,
     .free = free_expr
 };

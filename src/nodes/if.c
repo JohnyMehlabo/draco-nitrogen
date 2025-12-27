@@ -12,19 +12,8 @@ static void compile(stmt* s) {
     stmt_if* if_stmt = (stmt_if*)s;
 
     int if_end_reloc = relocations_new();
-
-    // TODO: Unnecesary cast
-    language_type cast_type;
-    type_init_basic(&cast_type, 8);
-
-    registers r = EXPR_COMPILE_VALUE_CASTED(if_stmt->condition, REG_ANY, &cast_type, false);
-    
-    asm_TEST_rm64_r64(RM_BASIC(r), r);
-    reset_register_used(r);
-    asm_JZ_reloc(if_end_reloc);
-
+    EXPR_EVALUATE_CONDITION(if_stmt->condition, -1, if_end_reloc);
     STMT_COMPILE(if_stmt->body);
-    
     relocations_define(if_end_reloc, compiler_get_offset());
 }
 

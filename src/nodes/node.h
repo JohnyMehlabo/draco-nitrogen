@@ -27,6 +27,7 @@ typedef struct {
     registers (*compile_value)(struct expr_s* e, registers m);
     registers (*compile_value_casted)(struct expr_s* e, registers m, const language_type* type, bool explicit);
     register_memory (*get_lvalue_rm)(struct expr_s* e);
+    void (*evaluate_condition)(struct expr_s* e, int t, int f);
     int (*get_priority)(struct expr_s* e);
     void (*free)(struct expr_s* e);
 } expr_vtable;
@@ -52,5 +53,6 @@ typedef struct expr_s {
 #define EXPR_COMPILE_VALUE(e, r) (e->vptr->compile_value(e, r))
 #define EXPR_COMPILE_VALUE_CASTED(e, r, t, ex) (e->vptr->compile_value_casted(e, r, t, ex))
 #define EXPR_LVALUE_GET_RM(e) (e->vptr->get_lvalue_rm(e))
+#define EXPR_EVALUATE_CONDITION(e, t, f) (e->vptr->evaluate_condition(e, t, f))
 #define EXPR_GET_PRIORITY(e) (e->vptr->get_priority(e))
 #define EXPR_FREE(e) (e->vptr->free(e))

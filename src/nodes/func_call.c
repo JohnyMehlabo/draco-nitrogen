@@ -116,6 +116,7 @@ const static expr_vtable func_call_vtable = {
     .compile_value = compile_value,
     .compile_value_casted = default_compilate_casted,
     .get_lvalue_rm = not_lvalue,
+    .evaluate_condition = default_evaluate_condition,
     .get_priority = get_priority,
     .free = free_expr
 };
