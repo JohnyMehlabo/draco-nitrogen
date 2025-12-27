@@ -114,6 +114,9 @@ void compiler_finish_function(const char* name) {
 
     // Start a new scope
     scope_new();
+
+    // Reset relocations
+    relocations_clear();
 }
 
 void compile_program(const stmt_program* program) {
