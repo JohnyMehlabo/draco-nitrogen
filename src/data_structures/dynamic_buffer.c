@@ -21,12 +21,15 @@ void db_writeb(dynamic_buffer* buffer, uint8_t value) {
 }
 
 void db_move_forward(dynamic_buffer* buffer, int offset) {
-    buffer->size += offset;
-    if (buffer->size >= buffer->capacity) {
+    size_t new_size = buffer->size + offset;
+    
+    while (buffer->size >= buffer->capacity) {
         buffer->capacity *= 2;
-        buffer->buffer = realloc(buffer->buffer, buffer->capacity);
-    }
+    } 
+    buffer->buffer = realloc(buffer->buffer, buffer->capacity);
+
     memmove(buffer->buffer + offset, buffer->buffer, buffer->size);
+    buffer->size = new_size;
 }
 
 void db_reset(dynamic_buffer* buffer) {
