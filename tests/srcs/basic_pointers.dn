@@ -1,0 +1,8 @@
+func main() -> int {
+    var int a = 10;
+    var int* ptr = &a;
+
+    *ptr = 72;
+
+    return a;    
+}
