@@ -5,7 +5,10 @@ typedef enum {
     BO_PLUS,
     BO_MINUS,
     BO_TIMES,
-    BO_OVER
+    BO_OVER,
+
+    BO_EQUALS,
+    BO_UNEQUAL,
 } binary_operator;
 
 typedef struct {

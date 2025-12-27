@@ -11,7 +11,11 @@ static void post_parse(expr* e) {
     EXPR_POST_PARSE(binaryop->lhs);
     EXPR_POST_PARSE(binaryop->rhs);
 
-    binaryop->expr_def_type = type_create_basic(4);
+    if (binaryop->operator == BO_EQUALS || binaryop->operator == BO_UNEQUAL) {
+        binaryop->expr_def_type = type_create_basic(1);
+    } else {
+        binaryop->expr_def_type = type_create_basic(4);
+    }
 }
 
 static int get_priority(expr* e) {
@@ -90,6 +94,14 @@ static registers compile_value(expr* e, registers m) {
         if (pushed_rdx) {
             asm_POP_rm64(RM_BASIC(REG_RDX));
         }
+        break;
+    case BO_EQUALS:
+        asm_CMP_rm64_r64(RM_BASIC(lhs_r), rhs_r);
+        asm_SETE_rm8(RM_BASIC(dst_r));
+        break;
+    case BO_UNEQUAL:
+        asm_CMP_rm64_r64(RM_BASIC(lhs_r), rhs_r);
+        asm_SETNE_rm8(RM_BASIC(dst_r));
         break;
     default:
         break;

@@ -186,10 +186,12 @@ void ASM_MOVZX_r32_rm16(registers dst, register_memory src) {
 }
 
 void ASM_MOVZX_r32_rm8(registers dst, register_memory src) {
-    if (dst & (REG_RSP | REG_RBP | REG_RSI | REG_RDI)) {
-        compiler_writeb(0x40); // opcode
-    } else if (dst & (REG_R8 | REG_R9 | REG_R10 | REG_R11 | REG_R12 | REG_R13 | REG_R14 | REG_R15)) {
-        compiler_writeb(0x41); // opcode
+    if (src.mode == AM_BASIC) {
+        if (src.base & (REG_RSP | REG_RBP | REG_RSI | REG_RDI)) {
+            compiler_writeb(0x40); // opcode
+        } else if (src.base & (REG_R8 | REG_R9 | REG_R10 | REG_R11 | REG_R12 | REG_R13 | REG_R14 | REG_R15)) {
+            compiler_writeb(0x41); // opcode
+        }
     }
 
     compiler_writeb(0x0f); // opcode
@@ -198,10 +200,12 @@ void ASM_MOVZX_r32_rm8(registers dst, register_memory src) {
 }
 
 void ASM_MOVZX_r16_rm8(registers dst, register_memory src) {
-    if (dst & (REG_RSP | REG_RBP | REG_RSI | REG_RDI)) {
-        compiler_writeb(0x40); // opcode
-    } else if (dst & (REG_R8 | REG_R9 | REG_R10 | REG_R11 | REG_R12 | REG_R13 | REG_R14 | REG_R15)) {
-        compiler_writeb(0x41); // opcode
+    if (src.mode == AM_BASIC) {
+        if (src.base & (REG_RSP | REG_RBP | REG_RSI | REG_RDI)) {
+            compiler_writeb(0x40); // opcode
+        } else if (src.base & (REG_R8 | REG_R9 | REG_R10 | REG_R11 | REG_R12 | REG_R13 | REG_R14 | REG_R15)) {
+            compiler_writeb(0x41); // opcode
+        }
     }
     
     compiler_writeb(0x66); // 16-bit prefix
@@ -273,6 +277,42 @@ void asm_TEST_rm64_r64(register_memory op1, registers op2) {
     compiler_writeb(0b01001000); // REX prefix
     compiler_writeb(0x85); // opcode
     generate_modrm(op1, reg_id(op2));
+}
+
+void asm_CMP_rm64_r64(register_memory op1, registers op2) {
+    compiler_writeb(0b01001000); // REX prefix
+    compiler_writeb(0x39); // opcode
+    generate_modrm(op1, reg_id(op2));
+}
+
+void asm_SETE_rm8(register_memory rm) {
+    if (rm.mode == AM_BASIC) {
+        if (rm.base & (REG_RSP | REG_RBP | REG_RSI | REG_RDI)) {
+            compiler_writeb(0x40); // opcode
+        } else if (rm.base & (REG_R8 | REG_R9 | REG_R10 | REG_R11 | REG_R12 | REG_R13 | REG_R14 | REG_R15)) {
+            compiler_writeb(0x41); // opcode
+        }
+    }
+
+    compiler_writeb(0x0f); // first byte of opcode
+    compiler_writeb(0x94); // second byte of opcode
+
+    generate_modrm(rm, 0);
+}
+
+void asm_SETNE_rm8(register_memory rm) {
+    if (rm.mode == AM_BASIC) {
+        if (rm.base & (REG_RSP | REG_RBP | REG_RSI | REG_RDI)) {
+            compiler_writeb(0x40); // opcode
+        } else if (rm.base & (REG_R8 | REG_R9 | REG_R10 | REG_R11 | REG_R12 | REG_R13 | REG_R14 | REG_R15)) {
+            compiler_writeb(0x41); // opcode
+        }
+    }
+
+    compiler_writeb(0x0f); // first byte of opcode
+    compiler_writeb(0x95); // second byte of opcode
+
+    generate_modrm(rm, 0);
 }
 
 void asm_SYSCALL() {

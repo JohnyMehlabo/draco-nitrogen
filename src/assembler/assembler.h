@@ -51,6 +51,10 @@ void asm_JMP_reloc(int reloc_id);
 void asm_JZ_reloc(int reloc_id);
 
 void asm_TEST_rm64_r64(register_memory op1, registers op2);
+void asm_CMP_rm64_r64(register_memory op1, registers op2);
+
+void asm_SETE_rm8(register_memory rm);
+void asm_SETNE_rm8(register_memory rm);
 
 void asm_SYSCALL();
 

@@ -16,6 +16,9 @@ typedef enum token_type {
     TT_ASTERISK, // *
     TT_SLASH, // /
 
+    TT_EQUALITY, // ==
+    TT_INEQUALITY, // !=
+
     TT_INTEGER,
 
     TT_IDENTIFIER,

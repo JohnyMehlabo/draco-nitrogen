@@ -32,7 +32,7 @@ expr* parse_primary_expr() {
     }
     break;
     default:
-        log_error("Unexpected token while parsign expression");
+        log_error("Unexpected token while parsing expression");
     }
 
     return NULL;
@@ -106,8 +106,21 @@ expr* parse_additive_expr() {
     return left;
 }
 
-expr* parse_assignment_expr() {
+expr* parse_equality_expr() {
     expr* left = parse_additive_expr();
+    while (parser_at()->type == TT_EQUALITY || parser_at()->type == TT_INEQUALITY) {
+        expr_binaryop* binaryop = expr_binaryop_create();
+        binaryop->operator = parser_eat()->type == TT_EQUALITY ? BO_EQUALS : BO_UNEQUAL;
+        binaryop->lhs = left;
+        binaryop->rhs = parse_additive_expr();
+        left = (expr*)binaryop;
+    }
+
+    return left;
+}
+
+expr* parse_assignment_expr() {
+    expr* left = parse_equality_expr();
 
     if (parser_at()->type == TT_EQUALS) {
         parser_eat(); // Eat the '=' token

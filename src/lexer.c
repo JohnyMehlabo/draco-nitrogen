@@ -11,6 +11,12 @@
             continue; \
         } 
 
+#define DOUBLE_CHARACTER_ENTRY(c1, c2, t) if (src_code[0] == c1 && src_code[1] == c2) { \
+                list[token_count++] = (token){ .type=t, .value=0 }; \
+                src_code += 2; \
+                continue; \
+            }
+
 typedef struct keyword {
     const char* string;
     const token_type type;
@@ -65,11 +71,9 @@ token* lexer_tokenize(const char* src_code) {
         }
         // Check for double-character tokens
         if (src_code[1]) {
-            if (src_code[0] == '-' && src_code[1] == '>') {
-                list[token_count++] = (token){ .type=TT_RIGHT_ARROW, .value=0 };
-                src_code += 2;
-                continue;
-            }
+            DOUBLE_CHARACTER_ENTRY('-', '>', TT_RIGHT_ARROW)
+            DOUBLE_CHARACTER_ENTRY('=', '=', TT_EQUALITY)
+            DOUBLE_CHARACTER_ENTRY('!', '=', TT_INEQUALITY)
         }
         if (*src_code == ' ' || *src_code == '\n' || *src_code == '\t' || *src_code == '\r') {
             src_code++;
