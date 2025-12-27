@@ -9,7 +9,7 @@ void empty_post_parse(expr* e) {}
 
 registers default_compilate_casted(expr* e, registers m, const language_type* type, bool explicit) {
     registers r = EXPR_COMPILE_VALUE(e, m);
-    type_basic_cast(e->expr_def_type->basic.size, type->basic.size, r);
+    type_default_cast(e->expr_def_type, type, r, explicit);
     return r;
 }
 

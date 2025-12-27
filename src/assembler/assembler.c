@@ -2,6 +2,7 @@
 #include "registers.h"
 #include "compiler/relocation.h"
 #include "compiler/compiler.h"
+#include "error_handling.h"
 
 // TODO: Implement function that handles the REX prefix automatically
 
@@ -179,13 +180,13 @@ void asm_MOV_rx_rmx(registers dst, register_memory src, int size) {
 }
 
 
-void ASM_MOVZX_r32_rm16(registers dst, register_memory src) {
+void asm_MOVZX_r32_rm16(registers dst, register_memory src) {
     compiler_writeb(0x0f); // opcode
     compiler_writeb(0xb7); // opcode
     generate_modrm(src, reg_id(dst));
 }
 
-void ASM_MOVZX_r32_rm8(registers dst, register_memory src) {
+void asm_MOVZX_r32_rm8(registers dst, register_memory src) {
     if (src.mode == AM_BASIC) {
         if (src.base & (REG_RSP | REG_RBP | REG_RSI | REG_RDI)) {
             compiler_writeb(0x40); // opcode
@@ -199,7 +200,7 @@ void ASM_MOVZX_r32_rm8(registers dst, register_memory src) {
     generate_modrm(src, reg_id(dst));
 }
 
-void ASM_MOVZX_r16_rm8(registers dst, register_memory src) {
+void asm_MOVZX_r16_rm8(registers dst, register_memory src) {
     if (src.mode == AM_BASIC) {
         if (src.base & (REG_RSP | REG_RBP | REG_RSI | REG_RDI)) {
             compiler_writeb(0x40); // opcode
@@ -214,10 +215,20 @@ void ASM_MOVZX_r16_rm8(registers dst, register_memory src) {
     generate_modrm(src, reg_id(dst));
 }
 
-void ASM_MOVZX_rx_rmy(registers dst, int dst_size, register_memory src, int src_size) {
-    if (dst_size == 2 && src_size == 1) ASM_MOVZX_r16_rm8(dst, src);
-    else if (dst_size == 4 && src_size == 1) ASM_MOVZX_r32_rm8(dst, src);
-    else if (dst_size == 4 && src_size == 2) ASM_MOVZX_r32_rm16(dst, src);
+void asm_MOVZX_rx_rmy(registers dst, int dst_size, register_memory src, int src_size) {
+    if (dst_size == 2 && src_size == 1) asm_MOVZX_r16_rm8(dst, src);
+    else if (dst_size == 4 && src_size == 1) asm_MOVZX_r32_rm8(dst, src);
+    else if (dst_size == 4 && src_size == 2) asm_MOVZX_r32_rm16(dst, src);
+}
+
+void asm_LEA_r64_m(registers dst, register_memory src) {
+    if (src.mode == AM_BASIC) {
+        log_error("Second operand to LEA must be a memory address");
+    }
+
+    compiler_writeb(0b01001000); // REX prefix
+    compiler_writeb(0x8d); // opcode
+    generate_modrm(src, reg_id(dst));
 }
 
 void asm_ADD_rm64_r64(register_memory op1, registers op2) {

@@ -94,12 +94,6 @@ static registers compile_value(expr* e, registers m) {
     return output_register;
 }
 
-static registers compile_value_casted(expr* e, registers m, const language_type* type, bool explicit) {
-    registers r = compile_value(e, m);
-    type_basic_cast(e->expr_def_type->basic.size, type->basic.size, r);
-    return r;
-}
-
 static void free_expr(expr* e) {
     expr_func_call* func_call = (expr_func_call*)e;
     // Free args
@@ -120,7 +114,7 @@ static int get_priority(expr* e) {
 const static expr_vtable func_call_vtable = {
     .post_parse = post_parse,
     .compile_value = compile_value,
-    .compile_value_casted = compile_value_casted,
+    .compile_value_casted = default_compilate_casted,
     .get_lvalue_rm = not_lvalue,
     .get_priority = get_priority,
     .free = free_expr

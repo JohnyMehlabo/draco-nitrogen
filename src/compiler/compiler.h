@@ -20,3 +20,4 @@ void set_register_used(registers m);
 registers get_available_reg_and_set(registers m);
 void reset_register_used(registers m);
 registers get_register_used(registers m);
+void reset_register_memory_used(register_memory rm);

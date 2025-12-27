@@ -89,6 +89,7 @@ token* lexer_tokenize(const char* src_code) {
         CHARACTER_ENTRY('-', TT_MINUS)
         CHARACTER_ENTRY('*', TT_ASTERISK)
         CHARACTER_ENTRY('/', TT_SLASH)
+        CHARACTER_ENTRY('&', TT_AMPERSAND)
         CHARACTER_ENTRY(';', TT_SEMICOLON)
 
         // Integer case

@@ -38,6 +38,8 @@ typedef enum {
     EK_BINARY_OP,
     EK_FUNC_CALL,
     EK_ASSIGNMENT,
+    EK_DEREFERENCE,
+    EK_ADDRESS_OF
 } expr_kind;
 
 typedef struct expr_s {

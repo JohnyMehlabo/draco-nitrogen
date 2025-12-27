@@ -24,11 +24,6 @@ static registers compile_value(expr* e, registers m) {
     return r;
 }
 
-static registers compile_value_casted(expr* e, registers m, const language_type* type, bool explicit) {
-    registers r = compile_value(e, m);
-    type_basic_cast(e->expr_def_type->basic.size, type->basic.size, r);
-    return r;
-}
 
 static register_memory get_lvalue_rm(expr* e) {
     expr_var_ident* var_ident = (expr_var_ident*)e;
@@ -45,7 +40,7 @@ static void free_expr(expr* e) {
 const static expr_vtable var_ident_vtable = {
     .post_parse = post_parse,
     .compile_value = compile_value,
-    .compile_value_casted = compile_value_casted,
+    .compile_value_casted = default_compilate_casted,
     .get_lvalue_rm = get_lvalue_rm,
     .get_priority = priority_zero,
     .free = free_expr

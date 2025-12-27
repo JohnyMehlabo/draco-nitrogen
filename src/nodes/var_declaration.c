@@ -15,7 +15,7 @@ static void compile(stmt* s) {
     if (var_decl->initial_value) {
         registers dst_reg = EXPR_COMPILE_VALUE_CASTED(var_decl->initial_value, REG_ANY, var_decl->variable_type, false); 
         // TODO: We should use type_get_size
-        asm_MOV_rmx_rx(RM_MEM_READ_DISP(REG_RBP, -stack_offset), dst_reg, var_decl->variable_type->basic.size);
+        asm_MOV_rmx_rx(RM_MEM_READ_DISP(REG_RBP, -stack_offset), dst_reg, type_get_size(var_decl->variable_type));
         reset_register_used(dst_reg);
     }
 }

@@ -5,6 +5,8 @@
 #include "nodes/binaryop.h"
 #include "nodes/func_call.h"
 #include "nodes/assignment.h"
+#include "nodes/dereference.h"
+#include "nodes/address_of.h"
 #include "error_handling.h"
 #include <stdlib.h>
 #include <stddef.h>
@@ -80,13 +82,30 @@ expr* parse_func_call_expr() {
     return left;
 }
 
+expr* parse_prefix_expr() {
+    if (parser_at()->type == TT_ASTERISK) {
+        parser_eat(); // Eat the first token
+        expr_dereference* dereference = expr_dereference_create();
+        dereference->e = parse_prefix_expr();
+        return (expr*)dereference;
+    }
+    if (parser_at()->type == TT_AMPERSAND) {
+        parser_eat(); // Eat the first token
+        expr_address_of* address_of = expr_address_of_create();
+        address_of->e = parse_prefix_expr();
+        return (expr*)address_of;
+    }
+
+    return parse_func_call_expr();
+}
+
 expr* parse_multiplicative_expr() {
-    expr* left = parse_func_call_expr();
+    expr* left = parse_prefix_expr();
     while (parser_at()->type == TT_ASTERISK || parser_at()->type == TT_SLASH) {
         expr_binaryop* binaryop = expr_binaryop_create();
         binaryop->operator = parser_eat()->type == TT_ASTERISK ? BO_TIMES : BO_OVER;
         binaryop->lhs = left;
-        binaryop->rhs = parse_func_call_expr();
+        binaryop->rhs = parse_prefix_expr();
         left = (expr*)binaryop;
     }
 

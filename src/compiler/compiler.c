@@ -203,3 +203,14 @@ void reset_register_used(registers m) {
 registers get_register_used(registers m) {
     return register_use_mask & m;
 }
+
+void reset_register_memory_used(register_memory rm) {
+    if (rm.mode == AM_BASIC) {
+        reset_register_used(rm.base);
+    } else {
+        // Make sure to not reset RBP and RSP when used like [rbp-12] or [rsp]
+        if (rm.base != REG_RBP || rm.base != REG_RSP) {
+            reset_register_used(rm.base);
+        }
+    }
+} 

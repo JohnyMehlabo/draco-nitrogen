@@ -2,6 +2,7 @@
 #include "assembler/assembler.h"
 #include "compiler/compiler.h"
 #include "common_methods.h"
+#include "error_handling.h"
 #include <stdlib.h>
 
 static registers compile_value(expr* e, registers m) {
@@ -16,6 +17,10 @@ static registers compile_value(expr* e, registers m) {
 static registers compile_value_casted(expr* e, registers m, const language_type* type, bool explicit) {
     expr_int_lit* int_literal = (expr_int_lit*)e;
     
+    if (type->kind != LTK_BASIC) {
+        log_error("Invalid cast between incompatible types");
+    }
+
     // // TODO: We are supposing that it is unsigned
     // int int_min_size = __builtin_clz(int_literal->value);
 

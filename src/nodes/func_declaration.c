@@ -44,7 +44,7 @@ static void compile(stmt* s) {
 static void free_stmt(stmt* s) {
     stmt_func_decl* func_decl = (stmt_func_decl*)s;
 
-	if (func_decl->declared_function->defined) {
+	if (func_decl->defined) {
 		for (int i = 0; i < func_decl->body.count; i++) {
         	STMT_FREE(((stmt*)func_decl->body.values[i]));
     	}
@@ -128,13 +128,13 @@ stmt* parse_func_decl() {
     
     language_type* return_type = parse_type();
     
-    func_decl->declared_function = function_declare((const char*)func_name_token->value, return_type, arg_list, func_decl->defined);
-
     if (parser_at()->type == TT_OPEN_BRACE ) {
         parser_eat();
         // Parse body
         da_init(&func_decl->body);
         func_decl->defined = true;
+
+        func_decl->declared_function = function_declare((const char*)func_name_token->value, return_type, arg_list, true);
 
 		// If the function has been already declared the original arg list should be used
 		language_function* previous_declaration = function_resolve((const char*)func_name_token->value);
@@ -160,6 +160,7 @@ stmt* parse_func_decl() {
         
     } else if (parser_eat()->type == TT_SEMICOLON ) {
         func_decl->defined = false;
+        func_decl->declared_function = function_declare((const char*)func_name_token->value, return_type, arg_list, false);
     } else {
         log_error("Expected opening brace or semicolon after function signature");
     }
