@@ -209,7 +209,7 @@ void reset_register_memory_used(register_memory rm) {
         reset_register_used(rm.base);
     } else {
         // Make sure to not reset RBP and RSP when used like [rbp-12] or [rsp]
-        if (rm.base != REG_RBP || rm.base != REG_RSP) {
+        if (rm.base != REG_RBP && rm.base != REG_RSP) {
             reset_register_used(rm.base);
         }
     }

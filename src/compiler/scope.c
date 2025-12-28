@@ -18,7 +18,13 @@ typedef struct {
     variable_map_entry* buckets[BUCKET_COUNT];
 } variable_hashmap;
 
-variable_hashmap variables;
+struct scope_s;
+typedef struct scope_s {
+    variable_hashmap variables;
+    struct scope_s* parent;
+} scope;
+
+scope* current_scope;
 
 // FNV-1 hashing algorithm
 int hash_function(const char* string) {
@@ -34,16 +40,16 @@ int hash_function(const char* string) {
     return hash % BUCKET_COUNT;
 }
 
-void variable_map_init() {
+void variable_map_init(variable_hashmap* map) {
     for (int i = 0; i < BUCKET_COUNT; i++) {
-        variables.buckets[i] = NULL;
+        map->buckets[i] = NULL;
     }
 }
 
-void variables_hashmap_add(const char* key, int offset, language_type* type) {
+void variables_hashmap_add(variable_hashmap* map, const char* key, int offset, language_type* type) {
     int bucket = hash_function(key);
 
-    variable_map_entry* current = variables.buckets[bucket]; 
+    variable_map_entry* current = map->buckets[bucket]; 
     variable_map_entry* new_entry = malloc(sizeof(variable_map_entry));
     new_entry->key = key;
     new_entry->next = NULL;
@@ -52,7 +58,7 @@ void variables_hashmap_add(const char* key, int offset, language_type* type) {
 
     // Check if it is the first element in its bucket
     if (current == NULL) {
-        variables.buckets[bucket] = new_entry;
+        map->buckets[bucket] = new_entry;
         return;
     }
 
@@ -63,10 +69,10 @@ void variables_hashmap_add(const char* key, int offset, language_type* type) {
     current->next = new_entry;
 }
 
-variable_map_entry* variables_hashmap_get(const char* key) {
+variable_map_entry* variables_hashmap_get(variable_hashmap* map, const char* key) {
     int bucket = hash_function(key);
     
-    variable_map_entry* current = variables.buckets[bucket];
+    variable_map_entry* current = map->buckets[bucket];
     while (current != NULL) {
         // Compare the current entry's key with the one wanted
         if (strcmp(key, current->key) == 0) {
@@ -81,34 +87,44 @@ variable_map_entry* variables_hashmap_get(const char* key) {
 }
 
 void scope_init() {
-    variable_map_init();
+    // Initial scope
+    current_scope = malloc(sizeof(scope));
+    current_scope->parent = NULL;
+    variable_map_init(&current_scope->variables);
 }
 
 int current_stack_offset = 0;
 int scope_declare_variable(const char* name, language_type* type) {
     current_stack_offset += 8;
-    variables_hashmap_add(name, current_stack_offset, type);
+    
+    variable_map_entry* previous_entry = variables_hashmap_get(&current_scope->variables, name);
+    if (previous_entry) {
+        log_error("Redefinition of variable");
+    }
+    
+    variables_hashmap_add(&current_scope->variables, name, current_stack_offset, type);
     return current_stack_offset;
 }
 
 language_variable* scope_resolve_variable(const char* name) {
-    variable_map_entry* entry = variables_hashmap_get(name);
-
-    if (entry == NULL) {
-        log_error("Trying to access undefined variable");
+    scope* current = current_scope;
+    variable_map_entry* entry;
+    while (current) {
+        entry = variables_hashmap_get(&current->variables, name);
+        if (entry == NULL) {
+            current = current->parent;
+        } else {
+            return &entry->variable;
+        }
     }
-
-    return &entry->variable;
+    
+    log_error("Trying to access undefined variable");
+    return NULL;
 }
 
-int scope_get_sp_offset() {
-    return current_stack_offset;
-}
-
-void scope_new() {
-    current_stack_offset = 0;
+void free_current_scope_data() {
     for (int i = 0; i < BUCKET_COUNT; i++) {
-        variable_map_entry* current = variables.buckets[i];
+        variable_map_entry* current = current_scope->variables.buckets[i];
         variable_map_entry* next;
 
         while (current != NULL) {
@@ -117,9 +133,47 @@ void scope_new() {
             current = next;
         }
     }
-    variable_map_init();
+}
+
+void scope_push() {
+    scope* new_scope = malloc(sizeof(scope));
+    new_scope->parent = current_scope;
+    variable_map_init(&new_scope->variables);
+    current_scope = new_scope;
+}
+
+void scope_pop() {
+    scope* popped_scope = current_scope;
+    free_current_scope_data();
+    current_scope = current_scope->parent;
+    free(popped_scope);
+}
+
+int scope_get_sp_offset() {
+    return current_stack_offset;
+}
+
+void scope_new() {
+    current_stack_offset = 0;
+    
+    // Clean everything but the last scope in the stack
+    free_current_scope_data();
+    scope* temp;
+    while (current_scope->parent != NULL) {
+        temp = current_scope->parent;
+        free(current_scope);
+        current_scope = temp;
+        free_current_scope_data();
+    }
+    
+    variable_map_init(&current_scope->variables);
 }
 
 void scope_cleanup() {
-    scope_new();
+    scope* current = current_scope;
+    while (current) {
+        current = current_scope->parent;
+        free_current_scope_data();
+        free(current_scope);
+    }
 }

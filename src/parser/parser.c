@@ -5,6 +5,7 @@
 #include "nodes/var_declaration.h"
 #include "nodes/if.h"
 #include "nodes/while.h"
+#include "nodes/block.h"
 #include "nodes/return.h"
 #include "error_handling.h"
 #include <stdlib.h>
@@ -31,6 +32,8 @@ stmt* parse_stmt() {
             return parse_if();
         case TT_WHILE:
             return parse_while();
+        case TT_OPEN_BRACE:
+            return parse_block();
         case TT_RETURN:
             return parse_return();
         default:
