@@ -4,6 +4,7 @@
 #include "nodes/var_identifier.h"
 #include "nodes/binaryop.h"
 #include "nodes/func_call.h"
+#include "nodes/array_subscript.h"
 #include "nodes/assignment.h"
 #include "nodes/dereference.h"
 #include "nodes/address_of.h"
@@ -40,9 +41,10 @@ expr* parse_primary_expr() {
     return NULL;
 }
 
-expr* parse_func_call_expr() {
+expr* parse_func_call_array_subscript_expr() {
     expr* left = parse_primary_expr();
 
+    // TODO: Nested calls won't work
     if (parser_at()->type == TT_OPEN_PAREN) {
         parser_eat();
 
@@ -78,7 +80,19 @@ expr* parse_func_call_expr() {
         new_expr->args = args;
         return (expr*)new_expr;
     }
+    while (parser_at()->type == TT_OPEN_BRACKET) {
+        parser_eat();
+        expr_array_subscript* new_expr = expr_array_subscript_create();
+        new_expr->accessed_array = left;
+        expr* index = parse_expr();
+        new_expr->index = index;
 
+        if (parser_eat()->type != TT_CLOSE_BRACKET) {
+            log_error("Expected closing \"]\" in array subscript");
+        }
+
+        left = (expr*)new_expr;
+    }
     return left;
 }
 
@@ -96,7 +110,7 @@ expr* parse_prefix_expr() {
         return (expr*)address_of;
     }
 
-    return parse_func_call_expr();
+    return parse_func_call_array_subscript_expr();
 }
 
 expr* parse_multiplicative_expr() {

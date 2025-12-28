@@ -95,15 +95,26 @@ void scope_init() {
 
 int current_stack_offset = 0;
 int scope_declare_variable(const char* name, language_type* type) {
-    current_stack_offset += 8;
+    int temp_offset = current_stack_offset;
+    if (type->kind == LTK_ARRAY) {
+        temp_offset += type_get_size(type);
+    } else {
+        temp_offset += 8;
+    }
     
     variable_map_entry* previous_entry = variables_hashmap_get(&current_scope->variables, name);
     if (previous_entry) {
         log_error("Redefinition of variable");
     }
     
-    variables_hashmap_add(&current_scope->variables, name, current_stack_offset, type);
-    return current_stack_offset;
+    variables_hashmap_add(&current_scope->variables, name, temp_offset, type);
+
+    // We need to make sure that the pointer is aligned at the end
+    temp_offset += 7;
+    temp_offset &= ~7;
+    current_stack_offset = temp_offset;
+
+    return temp_offset;
 }
 
 language_variable* scope_resolve_variable(const char* name) {

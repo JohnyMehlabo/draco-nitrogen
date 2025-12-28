@@ -19,6 +19,7 @@ static registers compile_value(expr* e, registers m) {
 
     registers dst_r = get_available_reg_and_set(m);
     register_memory rm = EXPR_LVALUE_GET_RM(address_of->e);
+    reset_register_memory_used(rm);
     asm_LEA_r64_m(dst_r, rm);
 
     return dst_r;

@@ -4,7 +4,8 @@
 
 typedef enum {
     LTK_BASIC,
-    LTK_PTR
+    LTK_PTR,
+    LTK_ARRAY
 } language_type_kind;
 
 struct language_type_s;
@@ -19,6 +20,10 @@ typedef struct language_type_s {
         struct {
             struct language_type_s* to;
         } ptr;
+        struct {
+            struct language_type_s* of;
+            int size;
+        } array;
     };
 } language_type;
 
@@ -30,7 +35,12 @@ language_type* type_create_basic(int size);
 void type_init_ptr(language_type* out, language_type* to);
 language_type* type_create_ptr(language_type* to);
 
+// Array type
+void type_init_array(language_type* out, language_type* of, int size);
+language_type* type_create_array(language_type* of, int size);
+
 int type_get_size(language_type* type);
+bool type_check_equal(language_type* type1, language_type* type2);
 void type_basic_cast(int from_size, int to_size, registers reg);
 void type_default_cast(const language_type* from, const language_type* to, registers reg, bool explicit);
 

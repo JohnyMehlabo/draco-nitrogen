@@ -1,0 +1,8 @@
+func main() -> int {
+    var int[10] array;
+    var int* array_ptr = array;
+
+    array_ptr[3] = 9;
+
+    return array[3];
+}

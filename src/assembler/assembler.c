@@ -250,6 +250,14 @@ void asm_IMUL_r64_rm64(registers op1, register_memory op2) {
     generate_modrm(op2, reg_id(op1));
 }
 
+void asm_IMUL_r64_rm64_imm32(registers dst, register_memory op1, uint32_t op2) {
+    compiler_writeb(0b01001000); // REX prefix
+    compiler_writeb(0x69); // opcode
+    generate_modrm(op1, reg_id(dst));
+    compiler_writed(op2);
+}
+
+
 void asm_IDIV_rm64(register_memory divisor) {
     compiler_writeb(0b01001000); // REX prefix
     compiler_writeb(0xf7); // opcode

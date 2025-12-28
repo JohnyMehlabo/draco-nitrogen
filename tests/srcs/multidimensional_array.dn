@@ -1,0 +1,12 @@
+func main() -> int {
+    var int[10][10] arr1;
+    var int[10][5] arr2;
+    var int[5][9] arr3;
+
+    arr1[4][6] = 78;
+    arr2[1][1] = 67;
+    arr3[8][4] = 32;
+    arr3[4][8] = 33;
+
+    return arr1[4][6] + arr2[1][1] + arr3[8][4];
+}

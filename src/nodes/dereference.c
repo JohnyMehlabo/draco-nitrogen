@@ -21,7 +21,11 @@ static registers compile_value(expr* e, registers m) {
     registers r = EXPR_COMPILE_VALUE(dereference->e, m);
     
     language_type* result_expr_type = dereference->e->expr_def_type->ptr.to;
-    asm_MOV_rx_rmx(r, RM_MEM_READ(r), type_get_size(result_expr_type));
+
+    // For arrays the value is the array itself
+    if (result_expr_type->kind != LTK_ARRAY) {
+        asm_MOV_rx_rmx(r, RM_MEM_READ(r), type_get_size(result_expr_type));
+    }
 
     return r;
 }

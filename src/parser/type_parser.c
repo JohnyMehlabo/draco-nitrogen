@@ -19,9 +19,22 @@ language_type* parse_type() {
         log_error("Failed parsing type. Expected type keyword");
     }
 
-    while (parser_at()->type == TT_ASTERISK) {
-        parser_eat();
-        current_type = type_create_ptr(current_type);
+    while (parser_at()->type == TT_ASTERISK || parser_at()->type == TT_OPEN_BRACKET) {
+        if (parser_at()->type == TT_ASTERISK) {
+            parser_eat();
+            current_type = type_create_ptr(current_type);
+        }
+        if (parser_at()->type == TT_OPEN_BRACKET) {
+            parser_eat();
+            if (parser_at()->type != TT_INTEGER) {
+                log_error("Array size specifier must be an integer");
+            }
+            int array_size = parser_eat()->value;
+            if (parser_eat()->type != TT_CLOSE_BRACKET) {
+                log_error("Expected closing \"]\" in array size specifier");
+            }
+            current_type = type_create_array(current_type, array_size);
+        }
     }
 
     return current_type;

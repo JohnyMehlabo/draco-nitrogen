@@ -43,6 +43,7 @@ void asm_LEA_r64_m(registers dst, register_memory src);
 void asm_ADD_rm64_r64(register_memory op1, registers op2);
 void asm_SUB_rm64_r64(register_memory op1, registers op2);
 void asm_IMUL_r64_rm64(registers op1, register_memory op2);
+void asm_IMUL_r64_rm64_imm32(registers dst, register_memory op1, uint32_t op2);
 void asm_IDIV_rm64(register_memory divisor);
 void asm_CDQ();
 

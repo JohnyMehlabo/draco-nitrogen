@@ -19,8 +19,14 @@ static registers compile_value(expr* e, registers m) {
     int stack_offset = scope_resolve_variable(var_ident->symbol)->stack_offset;
 
     registers r = get_available_reg(m);
-    asm_MOV_rx_rmx(r, RM_MEM_READ_DISP(REG_RBP, -stack_offset), type_get_size(var_ident->expr_def_type));
+
+    if (var_ident->expr_def_type->kind != LTK_ARRAY) {
+        asm_MOV_rx_rmx(r, RM_MEM_READ_DISP(REG_RBP, -stack_offset), type_get_size(var_ident->expr_def_type));
+    } else {
+        asm_LEA_r64_m(r, RM_MEM_READ_DISP(REG_RBP, -stack_offset));
+    }
     set_register_used(r);
+    
     return r;
 }
 

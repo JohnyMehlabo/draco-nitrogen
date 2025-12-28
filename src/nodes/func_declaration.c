@@ -11,9 +11,9 @@
 
 const static registers arg_registers[] = { REG_RDI, REG_RSI, REG_RDX, REG_RCX, REG_R8, REG_R9 };
 
-int* generate_arg_offsets(dynamic_array* args) {
+static int* generate_arg_offsets(dynamic_array* args) {
     int* arg_offsets = malloc(args->count * sizeof(int));
-    for (int i = 0; i <  args->count; i++) {
+    for (int i = 0; i < args->count; i++) {
         language_function_arg* arg = (language_function_arg*)args->values[i];
         arg_offsets[i] = scope_declare_variable(arg->symbol, arg->type);
     }

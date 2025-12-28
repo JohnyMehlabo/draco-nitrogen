@@ -6,6 +6,8 @@ typedef enum token_type {
     TT_CLOSE_PAREN, // )
     TT_OPEN_BRACE, // {
     TT_CLOSE_BRACE, // }
+    TT_OPEN_BRACKET, // [
+    TT_CLOSE_BRACKET, // ]
     TT_EQUALS, // =
     
     TT_COMMA, // ,

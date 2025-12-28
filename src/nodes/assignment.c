@@ -1,6 +1,7 @@
 #include "assignment.h"
 #include "common_methods.h"
 #include "compiler/compiler.h"
+#include "error_handling.h"
 #include <stdlib.h>
 #include <stddef.h>
 
@@ -9,12 +10,17 @@ static void post_parse(expr* e) {
 
     EXPR_POST_PARSE(assignment->lhs);
     EXPR_POST_PARSE(assignment->rhs);
+
+    if (assignment->lhs->expr_def_type->kind == LTK_ARRAY) {
+        log_error("Cannot assign to array type");
+    }
+
     // TODO: Should implement get rm size but this might just cut it
     assignment->expr_def_type = assignment->lhs->expr_def_type;
 }
 
 static registers compile_value(expr* e, registers m) {
-    expr_assignment* assignment = (expr_assignment*)e;
+    expr_assignment* assignment = (expr_assignment*)e;    
 
     register_memory rm = EXPR_LVALUE_GET_RM(assignment->lhs);
     registers src = EXPR_COMPILE_VALUE_CASTED(assignment->rhs, m, assignment->expr_def_type, false);
