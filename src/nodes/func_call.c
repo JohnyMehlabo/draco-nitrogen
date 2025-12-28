@@ -56,6 +56,12 @@ static void generate_args(const language_function* function, const dynamic_array
     free(args_with_priority);
 }
 
+static void reset_arg_registers(const language_function* function) {
+    for (int i = 0; i < function->args->count; i++) {
+        reset_register_used(arg_registers[i]);
+    }
+}
+
 static registers compile_value(expr* e, registers m) {
     expr_func_call* func_call = (expr_func_call*)e;
 
@@ -74,6 +80,8 @@ static registers compile_value(expr* e, registers m) {
     generate_args(func_call->function, func_call->args);
 
     asm_CALL_ereloc(func_call->function_symbol);
+
+    reset_arg_registers(func_call->function);
 
     // Move the return value to the correct register if needed
     if (output_register != REG_RAX) {
