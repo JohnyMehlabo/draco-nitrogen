@@ -1,0 +1,19 @@
+func fib(int n) -> int {
+    var int a = 0;
+    var int b = 1;
+    var int temp;
+
+    while (n) {
+        temp = a;
+        a = b;
+        b = temp + b;
+
+        n = n - 1;
+    }
+
+    return a;
+}
+
+func main() -> int {
+    return fib(40);
+}

@@ -8,5 +8,7 @@
 	{ "src": "srcs/function_arguments.dn", "exit_code": 89 },
 	{ "src": "srcs/integer_sum.dn", "exit_code": 55 },
 	{ "src": "srcs/while_integer_sum.dn", "exit_code": 55 },
-	{ "src": "srcs/basic_pointers.dn", "exit_code": 72 }
+	{ "src": "srcs/basic_pointers.dn", "exit_code": 72 },
+	{ "src": "srcs/while_integer_sum_wo_block.dn", "exit_code": 55 },
+	{ "src": "srcs/fibonacci.dn", "exit_code": 203 }
 ]
