@@ -26,7 +26,8 @@ typedef enum token_type {
     TT_IDENTIFIER,
     TT_FUNC, // func
     TT_VAR, // var
-    TT_IF,
+    TT_IF, // if
+    TT_WHILE, // while
     TT_RETURN, // return
 
     TT_CHAR, // char

@@ -30,7 +30,7 @@ static void compile(stmt* s) {
     for (int i = 0; i < func_decl->declared_function->args->count; i++) {
         language_function_arg* arg = (language_function_arg*)func_decl->declared_function->args->values[i];
         int offset = offsets[i];
-        asm_MOV_rmx_rx(RM_MEM_READ_DISP(REG_RBP, -offset), arg_registers[i], arg->type->basic.size);
+        asm_MOV_rmx_rx(RM_MEM_READ_DISP(REG_RBP, -offset), arg_registers[i], type_get_size(arg->type));
     }
 
     for (int i = 0; i < func_decl->body.count; i++) {

@@ -26,6 +26,7 @@ const keyword keyword_table[] = {
     { .string="func", .type=TT_FUNC },
     { .string="var", .type=TT_VAR },
     { .string="if", .type=TT_IF },
+    { .string="while", .type=TT_WHILE },
     { .string="return", .type=TT_RETURN },
     { .string="char", .type=TT_CHAR },
     { .string="int", .type=TT_INT },

@@ -1,0 +1,15 @@
+func while_body(int* n) -> int {
+    var int temp = *n;
+    *n = *n - 1;
+    return temp;
+}
+
+func main() -> int {
+    var int n = 10;
+    var int result = 0;
+    
+    while (n != 0)
+        result = result + while_body(&n);
+
+    return result;
+}

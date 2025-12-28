@@ -18,7 +18,7 @@ static registers compile_value(expr* e, registers m) {
 
     register_memory rm = EXPR_LVALUE_GET_RM(assignment->lhs);
     registers src = EXPR_COMPILE_VALUE_CASTED(assignment->rhs, m, assignment->expr_def_type, false);
-    asm_MOV_rmx_rx(rm, src, assignment->expr_def_type->basic.size);
+    asm_MOV_rmx_rx(rm, src, type_get_size(assignment->expr_def_type));
 
     reset_register_memory_used(rm);
 

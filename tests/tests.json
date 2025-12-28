@@ -7,5 +7,6 @@
 	{ "src": "srcs/successive_calls.dn", "exit_code": 245 },
 	{ "src": "srcs/function_arguments.dn", "exit_code": 89 },
 	{ "src": "srcs/integer_sum.dn", "exit_code": 55 },
+	{ "src": "srcs/while_integer_sum.dn", "exit_code": 55 },
 	{ "src": "srcs/basic_pointers.dn", "exit_code": 72 }
 ]

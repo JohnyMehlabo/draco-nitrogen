@@ -4,6 +4,7 @@
 #include "nodes/exprstmt.h"
 #include "nodes/var_declaration.h"
 #include "nodes/if.h"
+#include "nodes/while.h"
 #include "nodes/return.h"
 #include "error_handling.h"
 #include <stdlib.h>
@@ -26,13 +27,12 @@ stmt* parse_stmt() {
         {
         case TT_VAR:
             return parse_var_decl();
-            break;
         case TT_IF:
             return parse_if();
-            break;
+        case TT_WHILE:
+            return parse_while();
         case TT_RETURN:
             return parse_return();
-            break;
         default:
             return parse_expr_stmt();
         }

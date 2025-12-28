@@ -114,12 +114,6 @@ static registers compile_value(expr* e, registers m) {
     return dst_r;
 }
 
-static registers compile_value_casted(expr* e, registers m, const language_type* type, bool explicit) {
-    registers r = compile_value(e, m);
-    type_basic_cast(e->expr_def_type->basic.size, type->basic.size, r);
-    return r;
-}
-
 static void evaluate_condition(expr* e, int t, int f) {
     expr_binaryop* binaryop = (expr_binaryop*)e;
 
@@ -182,7 +176,7 @@ static void free_expr(expr* e) {
 const static expr_vtable binaryop_vtable = {
     .post_parse = post_parse,
     .compile_value = compile_value,
-    .compile_value_casted = compile_value_casted,
+    .compile_value_casted = default_compilate_casted,
     .get_lvalue_rm = not_lvalue,
     .evaluate_condition = evaluate_condition,
     .get_priority = get_priority,
