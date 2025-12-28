@@ -23,7 +23,7 @@ void db_writeb(dynamic_buffer* buffer, uint8_t value) {
 void db_move_forward(dynamic_buffer* buffer, int offset) {
     size_t new_size = buffer->size + offset;
     
-    while (buffer->size >= buffer->capacity) {
+    while (new_size > buffer->capacity) {
         buffer->capacity *= 2;
     } 
     buffer->buffer = realloc(buffer->buffer, buffer->capacity);
