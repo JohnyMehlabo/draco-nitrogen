@@ -78,7 +78,7 @@ void asm_MOV_r8_rm8(registers dst, register_memory src) {
         compiler_writeb(0x41); // opcode
     }
 
-    compiler_writeb(0x8b); // opcode
+    compiler_writeb(0x8a); // opcode
     generate_modrm(src, reg_id(dst));
 }
 
