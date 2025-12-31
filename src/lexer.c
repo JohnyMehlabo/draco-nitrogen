@@ -1,4 +1,5 @@
 #include "lexer.h"
+#include "error_handling.h"
 #include <stddef.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -109,6 +110,25 @@ token* lexer_tokenize(const char* src_code) {
             list[token_count++] = (token){ .type=TT_INTEGER, .value=value };
             continue;
         }
+        if (*src_code == '"') {
+            src_code++; // Skip first quote
+            const char* start = src_code;
+            while (*src_code != '"' && *src_code) {
+                src_code++;
+            }
+            if (*src_code != '"') {
+                log_error("Missing closing \"\"\". Reached EOF");
+            }
+            int string_size = src_code - start;
+            src_code++; // Skip second quoute
+
+            char* string = malloc(string_size + 1);
+            string[string_size] = '\0';
+            memcpy(string, start, string_size);
+
+            list[token_count++] = (token){ .type=TT_STRING, .value=(uint64_t)string };
+            continue;
+        }
         // Identifier/keyword case
         if ((*src_code >= 'a' && *src_code <= 'z') || (*src_code >= 'A' && *src_code <= 'Z') || *src_code == '_') {
             const char* start = src_code;
@@ -144,12 +164,12 @@ token* lexer_tokenize(const char* src_code) {
 }
 
 void lexer_free_tokens(token* tokens) {
-
     // We may need to free some allocated memory used for a token
     const token* current_token = tokens;
     while (current_token->type != TT_END_OF_FILE) {
-
         if (current_token->type == TT_IDENTIFIER) {
+            free((char*)current_token->value);
+        } else if (current_token->type == TT_STRING) {
             free((char*)current_token->value);
         }
         current_token++;

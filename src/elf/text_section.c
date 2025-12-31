@@ -17,13 +17,12 @@ elf_text_section* elf_create_text_section(elf* parent) {
     
     // Section header
     new_section->base.header.type = SHT_PROGBITS;
-    new_section->base.header.size = 1;
+    new_section->base.header.size = 0;
     new_section->base.header.flags = SHF_ALLOC | SHF_EXECINSTR;
     new_section->base.header.addralign = 0x10;
     new_section->base.header.name = elf_add_string(parent, ".text");
     
     da_init(&new_section->code_blocks);
-    new_section->base.header.size = 0;
 
     return new_section;
 }

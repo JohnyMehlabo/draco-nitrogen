@@ -8,7 +8,6 @@ static void post_parse(expr* e) {
     expr_array_subscript* array_subscript = (expr_array_subscript*)e;
 
     EXPR_POST_PARSE(array_subscript->accessed_array);
-    EXPR_POST_PARSE(array_subscript->index);
 
     // Check if the expression is actually accessible
     if (array_subscript->accessed_array->expr_def_type->kind == LTK_ARRAY) {

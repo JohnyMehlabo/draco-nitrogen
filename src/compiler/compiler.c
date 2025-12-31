@@ -64,12 +64,19 @@ void compiler_finish_function(const char* name) {
     relocations_clear();
 }
 
+int compiler_add_string(const char* string) {
+    return elf_handler_add_string(string);
+}
+
+void compiler_add_string_relocation(int string_offset) {
+    elf_handler_add_rela_relocation(".rodata", global_size + compiler_get_offset(), 2, string_offset-4);
+}
+
 void compile_program(const stmt_program* program) {
     elf_handler_init();
     relocations_init();
     db_init(&out_buffer);
 
-    
     for (int i = 0; i < program->stmt_count; i++) {
         STMT_COMPILE(program->stmt_list[i]);
     }

@@ -1,6 +1,7 @@
 #include "expr_parser.h"
 #include "parser.h"
 #include "nodes/int_literal.h"
+#include "nodes/string_literal.h"
 #include "nodes/var_identifier.h"
 #include "nodes/binaryop.h"
 #include "nodes/func_call.h"
@@ -18,6 +19,11 @@ expr* parse_primary_expr() {
     case TT_INTEGER: {
         expr_int_lit* e = expr_int_lit_create();
         e->value = parser_eat()->value;
+        return (expr*)e;
+    }
+    case TT_STRING: {
+        expr_string_lit* e = expr_string_lit_create();
+        e->string = (const char*)parser_eat()->value;
         return (expr*)e;
     }
     case TT_IDENTIFIER: {

@@ -24,6 +24,7 @@ typedef enum token_type {
     TT_INEQUALITY, // !=
 
     TT_INTEGER,
+    TT_STRING,
 
     TT_IDENTIFIER,
     TT_FUNC, // func

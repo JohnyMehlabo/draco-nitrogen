@@ -1,11 +1,14 @@
 #include "elf_handler.h"
 #include "elf/elf.h"
 #include "elf/text_section.h"
+#include "elf/rodata_section.h"
 #include "elf/rela_section.h"
+#include <string.h>
 #include <stdlib.h>
 
 elf output;
 elf_text_section* text_section;
+elf_rodata_section* rodata_section;
 
 typedef struct {
     const char* symbol;
@@ -21,7 +24,12 @@ elf_rela_section* text_rela_section;
 void elf_handler_init() {
     elf_init(&output);
     text_section = elf_create_text_section(&output);
+    rodata_section = elf_create_rodata_section(&output);
     text_rela_section = elf_create_rela_section(&output, (elf_section*)text_section, ".rela.text");
+
+    // Create required symbols for sections
+    elf_add_symbol(&output, ".text", STB_LOCAL, 3, 0, text_section->base.section_index, 0, 0);
+    elf_add_symbol(&output, ".rodata", STB_LOCAL, 3, 0, rodata_section->base.section_index, 0, 0);
     
     da_init(&pending_rela_relocations);
 }
@@ -70,6 +78,12 @@ void pending_rela_relocations_apply() {
 void elf_handler_add_code_block(uint8_t* buffer, size_t size, const char* name, int prologue_size) {
     pending_rela_relocations_adjust(prologue_size);
     elf_text_section_add_block(&output, text_section, buffer, size, name);
+}
+
+int elf_handler_add_string(const char* string) {
+    int offset = rodata_section->base.header.size;
+    elf_rodata_section_add_data(rodata_section, (const uint8_t*)string, strlen(string)+1);
+    return offset;
 }
 
 void elf_handler_dump(const char* filename) {

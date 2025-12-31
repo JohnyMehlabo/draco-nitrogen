@@ -35,6 +35,7 @@ typedef struct {
 typedef enum {
     EK_NONE = 0,
     EK_INT_LITERAL,
+    EK_STRING_LITERAL,
     EK_VAR_IDENT,
     EK_BINARY_OP,
     EK_FUNC_CALL,

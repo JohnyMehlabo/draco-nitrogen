@@ -8,6 +8,9 @@ void compile_program(const stmt_program* program);
 void compiler_finish_function(const char* name);
 void compiler_add_function_relocation(const char* symbol);
 
+int compiler_add_string(const char* string);
+void compiler_add_string_relocation(int string_offset);
+
 int compiler_get_offset();
 void compiler_writeb(uint8_t b);
 void compiler_writew(uint16_t w);

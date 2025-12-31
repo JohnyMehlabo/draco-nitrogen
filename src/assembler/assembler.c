@@ -231,6 +231,14 @@ void asm_LEA_r64_m(registers dst, register_memory src) {
     generate_modrm(src, reg_id(dst));
 }
 
+void asm_LEA_r64_str_ereloc(registers dst, int string_offset) {
+    compiler_writeb(0b01001000); // REX prefix
+    compiler_writeb(0x8d); // opcode
+    compiler_writeb(5 | reg_id(dst) << 3);
+    compiler_add_string_relocation(string_offset);
+    compiler_writed(0); // Temporal zeros
+}
+
 void asm_ADD_rm64_r64(register_memory op1, registers op2) {
     compiler_writeb(0b01001000); // REX prefix
     compiler_writeb(0x01); // opcode

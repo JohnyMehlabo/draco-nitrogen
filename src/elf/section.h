@@ -33,7 +33,8 @@ typedef enum {
     ST_STRING_TABLE,
     ST_SYMBOL_TABLE,
     ST_RELOCATION_TABLE,
-    ST_TEXT
+    ST_TEXT,
+    ST_RODATA
 } elf_section_type;
 
 typedef struct {

@@ -5,6 +5,10 @@
 #include "error_handling.h"
 #include <stdlib.h>
 
+static void post_parse(expr* e) {
+    e->expr_def_type = type_create_basic(4);
+}
+
 static registers compile_value(expr* e, registers m) {
     expr_int_lit* int_literal = (expr_int_lit*)e;
 
@@ -47,7 +51,7 @@ static void free_expr(expr* e) {
 }
 
 const static expr_vtable int_lit_vtable = {
-    .post_parse = empty_post_parse,
+    .post_parse = post_parse,
     .compile_value = compile_value,
     .compile_value_casted = compile_value_casted,
     .get_lvalue_rm = not_lvalue,
@@ -60,7 +64,6 @@ expr_int_lit* expr_int_lit_create() {
     expr_int_lit* int_literal = malloc(sizeof(expr_int_lit));
     int_literal->vptr = &int_lit_vtable;
     int_literal->kind = EK_INT_LITERAL;
-    int_literal->expr_def_type = type_create_basic(4);
 
     return int_literal;
 }

@@ -20,6 +20,18 @@ void db_writeb(dynamic_buffer* buffer, uint8_t value) {
     buffer->size++;
 }
 
+void db_write_buffer(dynamic_buffer* buffer, const uint8_t* src_buffer, size_t size) {
+    size_t new_size = buffer->size + size;
+    
+    while (new_size > buffer->capacity) {
+        buffer->capacity *= 2;
+    } 
+    buffer->buffer = realloc(buffer->buffer, buffer->capacity);
+
+    memcpy(buffer->buffer+buffer->size, src_buffer, size);
+    buffer->size = new_size; 
+}
+
 void db_move_forward(dynamic_buffer* buffer, int offset) {
     size_t new_size = buffer->size + offset;
     

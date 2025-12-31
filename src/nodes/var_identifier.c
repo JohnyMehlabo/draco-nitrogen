@@ -9,7 +9,6 @@
 static void post_parse(expr* e) {
     expr_var_ident* var_ident = (expr_var_ident*)e;
 
-    // TODO: set the variable type as defined previously
     var_ident->expr_def_type = scope_resolve_variable(var_ident->symbol)->type;
 }
 
